@@ -1,0 +1,10 @@
+Source bundle cleanup
+
+Mod source, Papyrus source, configuration, build scripts, dependency source and
+license notices are retained. Precompiled mod files, release ZIPs, artwork,
+logs, vendor tests/examples/docs, and unused SkyUI assets are omitted.
+Included source files are byte-for-byte unchanged.
+
+CommonLib source builds: configure with -DBUILD_TESTS=OFF because vendor test
+fixtures are omitted. Mod-owned tests are retained.
+Build tools/compiler/SDK dependencies remain as documented in the project.
