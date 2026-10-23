@@ -85,7 +85,7 @@ public:
     }
     void enter() {
         if (!formsReady || !valid) {active=false;report(inactiveReason());return;}
-        // One-time migration only: stop the retired 0.1.5 quest, without operating its AI or aliases.
+        // Save compatibility only: stop the retired helper without operating its AI or aliases.
         if (auto* legacy=RE::TESDataHandler::GetSingleton()->LookupForm<RE::TESQuest>(0xC00,"NotesAndLetters.esp");legacy && legacy->IsRunning()) {legacy->Stop();logger::info("Stopped retired courier helper quest");}
         data.helperDelivery=false;data.courierKey=0;data.courierTarget=0;data.sceneSeen=false;
         queued=false;notificationOutstanding=false;active=true;refreshEventBridge();queueScan();
@@ -184,7 +184,7 @@ public:
         constexpr std::array<unsigned,4> categories{8,9,11,12};
         for (unsigned i=0;i<4;++i) {
             if (!allowed[i]) continue;if (s.playerDue[i]<0) {s.playerDue[i]=day+data.random.days(low[i],high[i]);continue;}if (day<s.playerDue[i]) continue;
-            s.playerDue[i]=day+data.random.days(low[i],high[i]);if (!data.random.chance(odds[i])) continue;
+            s.playerDue[i]=day+data.random.days(low[i],high[i]);if (!data.random.letterChance(odds[i])) continue;
             if (i==3) {if (!canStageHate(data,a->GetFormID())) continue;if (auto id=create(pick(categories[i]),a,Purpose::HateDraft,a,a->GetName())) data.notes.at(*id).due=day+data.random.days(2,3);}
             else {std::string sign=i==0 ? first(a->GetName()) : i==1 ? initial(a->GetName()) : data.random.chance(50) ? a->GetName() : initial(a->GetName());directPlayerLetter(categories[i],a,std::move(sign));}
         }
@@ -281,7 +281,7 @@ public:
         for (auto id:drafts) {auto& n=data.notes.at(id);auto* actor=RE::TESForm::LookupByID<RE::Actor>(n.sender);
             if (!readyHate(n,now(),actor && find(actor,n),actor && !actor->IsDead())) {n.purpose=Purpose::Delivered;continue;}sendPlayer(id,actor);
         }
-        std::vector<unsigned> due;for (auto& [id,s]:data.actors) if (s.investmentDue>=0 && now()>=s.investmentDue) {s.investmentDue=-1;if (data.random.chance(20)) due.push_back(id);}
+        std::vector<unsigned> due;for (auto& [id,s]:data.actors) if (s.investmentDue>=0 && now()>=s.investmentDue) {s.investmentDue=-1;if (data.random.letterChance(20)) due.push_back(id);}
         for (auto id:due) if (auto* a=RE::TESForm::LookupByID<RE::Actor>(id);a && !a->IsDead()) {
             std::string shop=data.actors.at(id).shop;
             directPlayerLetter(10,a,std::string(a->GetName())+", "+shop,shop);
@@ -291,6 +291,7 @@ public:
         if (!courier || now()<data.bundleDue) return;data.bundleDue=now()+data.random.days(3,5);
         std::vector<unsigned> old;for (const auto& [id,n]:data.notes) if (n.purpose==Purpose::Bundle && n.owner==courier->GetFormID()) old.push_back(id);
         for (auto id:old) transfer(id,courier,nullptr);
+        if (!data.random.letterChance(100)) return;
         const unsigned target=2+unsigned(data.random.next()%3);
         for (unsigned i=0;i<target;++i) create(pick(unsigned(data.random.next()%8)),courier,Purpose::Bundle);
     }
@@ -344,7 +345,7 @@ public:
             std::vector<RE::Actor*> locals;
             for (auto* a:actors) if (eligible(a) && a->GetActorBase()->IsUnique() && settlement(a->GetEditorLocation())==loc && a!=spouse()) locals.push_back(a);
             if (locals.empty()) continue;auto* sender=locals[data.random.next()%locals.size()];
-            data.homesProcessed|=std::uint8_t(1u<<i);data.houseSenders[i]=sender->GetFormID();const auto roll=data.random.next()%100;unsigned amount=roll<10 ? 2 : roll<95 ? 1 : 0;
+            data.homesProcessed|=std::uint8_t(1u<<i);data.houseSenders[i]=sender->GetFormID();const unsigned amount=houseLetterCount(data.random);
             std::vector<unsigned> choices;for (unsigned j=0;j<224;++j) if (catalog[j].category==13+i) choices.push_back(j);
             if (data.random.chance(50)) std::reverse(choices.begin(),choices.end());
             for (unsigned j=0;j<amount;++j) {std::string sign=data.random.chance(50) ? sender->GetName() : initial(sender->GetName());if (create(choices[j],container,Purpose::ToPlayer,sender,sign)) notifyCourier();}
@@ -459,7 +460,7 @@ void message(SKSE::MessagingInterface::Message* e) {
 }
 SKSEPluginLoad(const SKSE::LoadInterface* skse) {
     SKSE::Init(skse);if (auto path=SKSE::log::log_directory()) {auto sink=std::make_shared<spdlog::sinks::basic_file_sink_mt>((*path/"NotesAndLetters.log").string(),true);spdlog::set_default_logger(std::make_shared<spdlog::logger>("NotesAndLetters",std::move(sink)));spdlog::set_level(spdlog::level::info);spdlog::flush_on(spdlog::level::info);}
-    logger::info("Notes and Letters 0.1.5 development build; runtime {}",REL::Module::get().version().string());
+    logger::info("Notes and Letters 0.1.6 development build; runtime {}",REL::Module::get().version().string());
     const auto version=REL::Module::get().version();const std::set<unsigned> ae{317,318,323,342,353,629,640,659,1130,1170,1179};
     if (!(version.major()==1 && ((version.minor()==5 && version.patch()==97) || (version.minor()==6 && ae.contains(version.patch())) || (version.minor()==7 && (version.patch()==99 || version.patch()==104))))) {logger::error("Unsupported runtime");return false;}
     auto* api=SKSE::GetSerializationInterface();if (!api || !SKSE::GetTaskInterface()) return false;

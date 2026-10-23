@@ -1,7 +1,7 @@
 {
-  "version": "0.1.5-dev",
+  "version": "0.1.6-dev",
   "source_archive": "Notes-and-Letters-source.zip",
-  "source_sha256": "471241c573af6939fbe833cce179201a5e9d1fd537d45f9cfac1dda113489551",
+  "source_sha256": "17c9c9178cc239f9a3f41e958fb76769afae619f38f4222e0382459bc88da33e",
   "precompiled_commonlib": "build/vendor/CommonLibSSE-NG/CommonLibSSE.lib",
   "precompiled_download": "CommonLibSSE.lib.xz",
   "precompiled_sha256": "3903944e64320d91cd3e683b6759764932aade24da0261f07b291b36d0405687"

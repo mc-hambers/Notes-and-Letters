@@ -1,0 +1,50 @@
+{
+  "version": "0.1.6",
+  "plugin_name": "Notes and Letters",
+  "dll_architecture": "x64",
+  "windows_loader": "passed",
+  "skse_exports": "passed",
+  "gameplay_tested": false,
+  "optional_event_patch": {
+    "optional_patch": "NotesAndLetters-CourierEvent.esp",
+    "original_quest_non_script_fields_preserved": true,
+    "old_scripts_not_replaced": true,
+    "new_script": "NL_NPCNoteDelivery",
+    "event": "OnNLDeliverNote",
+    "compiler": "Caprica",
+    "original_plugin_sha256": "c11e2250076a86ddff831d808782874a8c1aac8904fccc1af512ac3320c20363",
+    "gameplay_tested": false
+  },
+  "core_behavior_checks": 51446,
+  "esl_flag": true,
+  "compact_book_records": 896,
+  "unique_note_texts": 224,
+  "model_variants": 4,
+  "old_delivery_implementation_removed": true,
+  "retired_records_inert": true,
+  "structural_record_validation": "passed",
+  "dll_sha256": "d39ebfb583dc6aae97408606f9727d83c1bd1bb82ad7f283fff59483cc03c908",
+  "esp_sha256": "de39bfb6e89105e6fa0d315794ee23fdb49d1878449cb26b3f03f40aa271d937",
+  "save_schema": 2,
+  "paper_note_inventory_art": [
+    "Skyrim.esm|097788",
+    "Skyrim.esm|01541B",
+    "Skyrim.esm|01541C",
+    "Skyrim.esm|015421"
+  ],
+  "off_cell_npc_distribution": true,
+  "explicit_courier_helper": false,
+  "courier_delivery_event": "OnNLDeliverNote",
+  "book_text_hook_show_event_only": true,
+  "npc_courier_optional": true,
+  "polymorphic_courier_reference_resolution": true,
+  "session_only_repeat_debug": true,
+  "debug_commands": [
+    "NLDebug",
+    "NLSpawnNote",
+    "NLRepeatNotes",
+    "NLDeliverNote"
+  ],
+  "safe_extra_data_allocation_bytes": 32,
+  "development_build": true
+}

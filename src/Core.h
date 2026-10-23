@@ -20,9 +20,11 @@ struct Random {
     double unit() {return (next()>>11)*0x1.0p-53;}
     double days(double low,double high) {return low+(high-low)*unit();}
     bool chance(unsigned percent) {return next()%100<percent;}
+    // Old percentage weights on 200 outcomes halve generation without rounding 0.5% away.
+    bool letterChance(unsigned oldPercent) {return next()%200<oldPercent;}
 };
 enum Role : unsigned { Ordinary, Beggar, Bandit, Guard, Noble, Bard, Farmer, Merchant, Smith, Innkeeper, Healer, Scholar, Hunter, Worker, Settler };
-inline int chanceFor(Role role,unsigned category) {
+inline int categoryWeight(Role role,unsigned category) {
     if (category==5 && !(role==Merchant || role==Smith || role==Innkeeper || role==Farmer || role==Worker)) return 0;
     if (category==6 && (role==Bandit || role==Hunter)) return 0;
     if ((role==Beggar || role==Bandit) && category<5) return 1;
@@ -40,18 +42,19 @@ inline int chanceFor(Role role,unsigned category) {
 // One category is selected first, then exactly one chance roll. Never eight independent rolls.
 inline std::optional<unsigned> rollNPC(Random& random,Role role) {
     std::array<unsigned,8> allowed{};unsigned count=0;
-    for (unsigned c=0;c<8;++c) if (chanceFor(role,c)) allowed[count++]=c;
+    for (unsigned c=0;c<8;++c) if (categoryWeight(role,c)) allowed[count++]=c;
     const auto category=allowed[random.next()%count];
-    return random.chance(chanceFor(role,category)) ? std::optional<unsigned>(category) : std::nullopt;
+    return random.letterChance(categoryWeight(role,category)) ? std::optional<unsigned>(category) : std::nullopt;
 }
 // Forced debug success retains the category distribution conditional on a normal successful roll.
 inline unsigned forcedNPCCategory(Random& random,Role role) {
-    unsigned total=0;for (unsigned c=0;c<8;++c) total+=unsigned(chanceFor(role,c));
+    unsigned total=0;for (unsigned c=0;c<8;++c) total+=unsigned(categoryWeight(role,c));
     unsigned value=unsigned(random.next()%total);
-    for (unsigned c=0;c<8;++c) {unsigned weight=unsigned(chanceFor(role,c));if (value<weight) return c;value-=weight;}
+    for (unsigned c=0;c<8;++c) {unsigned weight=unsigned(categoryWeight(role,c));if (value<weight) return c;value-=weight;}
     return 7;
 }
-inline bool useCourier(bool enabled,bool questReady,bool sceneReady,bool recipientSupported) {return enabled && questReady && sceneReady && recipientSupported;}
+inline bool useCourier(bool enabled,bool questReady,bool eventReady,bool recipientSupported) {return enabled && questReady && eventReady && recipientSupported;}
+inline unsigned houseLetterCount(Random& random) {const auto roll=random.next()%200;return roll<10 ? 2 : roll<95 ? 1 : 0;}
 
 enum class Purpose : std::uint8_t { Pocket, Bundle, ToPlayer, HateDraft, Delivered };
 struct Instance { std::uint16_t text=0,uid=0; std::uint8_t model=0; std::uint32_t owner=0,sender=0,extraBase=0;std::uint16_t extraUID=0; double due=0; Purpose purpose=Purpose::Pocket;std::string body,signature; };
