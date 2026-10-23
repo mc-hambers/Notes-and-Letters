@@ -1,8 +1,8 @@
 # Notes and Letters
 
-Skyrim SE/AE mod — source version **0.1.6-dev**.
+Skyrim SE/AE mod — source version **1.0.0-dev**.
 
-## Version 0.1.6
+## Version 1.0.0
 
 Normal generation is half as likely: NPC chances are now 0.5–1.5%, spouse letters 2.5%, jealousy/hate 0.5%, friendship 1%, and investment letters 10%. Courier bundles have a 50% chance per existing refresh; new house decisions are 42.5% one letter, 5% two, and 52.5% none. Existing notes, timers, category balance and save schema are preserved.
 
@@ -34,7 +34,7 @@ This program is distributed WITHOUT ANY WARRANTY, including the implied warranti
 
 ---
 
-# Notes and Letters — 0.1.6 development build
+# Notes and Letters — 1.0.0 development build
 
 An SKSE mod adding small pieces of correspondence to Skyrim. This is an initial development build. Compilation and automated tests have passed; the courier scenes, book rendering, and gameplay triggers still require in-game acceptance testing.
 
@@ -112,7 +112,7 @@ Run `scripts/build_content.py` with Python, then `scripts/build.ps1` with the co
 See `VALIDATION.md` for remaining in-game checks. Logs are written to the Skyrim SKSE log folder as `NotesAndLetters.log`.
 
 
-## Version 0.1.6
+## Version 1.0.0
 
 Normal note-generation chances are halved across NPC pocket notes, player relationship letters, investments, house welcomes and courier bundles. Fractional percentages remain exact; timers, category balance, signatures, existing notes, queued deliveries and saved house decisions are preserved. Note cleanup retains its existing 50% removal chance.
 

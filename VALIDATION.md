@@ -1,4 +1,4 @@
-# Validation — 0.1.6 development build
+# Validation — 1.0.0 development build
 
 The x64 DLL, native core tests and package/binary checks must pass before release. Core checks cover half-rate generation (including fractional 0.5% chances), house outcomes, category restrictions, persistence, old-save decoding, refresh timers, book variants, event callback IDs, debug forcing and duplicate prevention. Package checks cover all 896 BOOK records, stable FormIDs, inert compatibility records, optional event patch structure, binary metadata, licensing and exact archived payloads.
 
