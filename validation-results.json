@@ -1,21 +1,11 @@
 {
-  "version": "1.0.1",
+  "version": "1.1.0",
   "plugin_name": "Notes and Letters",
   "dll_architecture": "x64",
   "windows_loader": "passed",
   "skse_exports": "passed",
   "gameplay_tested": false,
-  "optional_event_patch": {
-    "optional_patch": "NotesAndLetters-CourierEvent.esp",
-    "original_quest_non_script_fields_preserved": true,
-    "old_scripts_not_replaced": true,
-    "new_script": "NL_NPCNoteDelivery",
-    "event": "OnNLDeliverNote",
-    "compiler": "Caprica",
-    "original_plugin_sha256": "c11e2250076a86ddff831d808782874a8c1aac8904fccc1af512ac3320c20363",
-    "gameplay_tested": false
-  },
-  "core_behavior_checks": 66807,
+  "core_behavior_checks": 66797,
   "esl_flag": true,
   "compact_book_records": 896,
   "unique_note_texts": 224,
@@ -23,7 +13,7 @@
   "old_delivery_implementation_removed": true,
   "retired_records_inert": true,
   "structural_record_validation": "passed",
-  "dll_sha256": "273339bd9050292620fc83ff44a48a7c1f416d061553d884453ac8fcdab00b21",
+  "dll_sha256": "a6a84f73caa4b8f41abfa9bbe54a5e48e717ac59a82994795c05e97ca1634176",
   "esp_sha256": "de39bfb6e89105e6fa0d315794ee23fdb49d1878449cb26b3f03f40aa271d937",
   "save_schema": 2,
   "paper_note_inventory_art": [
@@ -34,16 +24,16 @@
   ],
   "off_cell_npc_distribution": true,
   "explicit_courier_helper": false,
-  "courier_delivery_event": "OnNLDeliverNote",
+  "npc_courier_integration": false,
   "book_text_hook_show_event_only": true,
-  "npc_courier_optional": true,
+  "legacy_queued_npc_recovery": true,
   "polymorphic_courier_reference_resolution": true,
   "session_only_repeat_debug": true,
   "debug_commands": [
     "NLDebug",
     "NLSpawnNote",
     "NLRepeatNotes",
-    "NLDeliverNote"
+    "NLDeliverPlayerNote"
   ],
   "safe_extra_data_allocation_bytes": 32,
   "development_build": true

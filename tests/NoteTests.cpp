@@ -16,6 +16,19 @@ struct MockHandler {
     template<class T>T* LookupForm(unsigned id,const char* name) {auto* form=LookupForm(id,name);return form && form->type==T::FORMTYPE ? form->template As<T>() : nullptr;}
 };
 int main() {
+    {
+        Data old;Instance pending;pending.text=8;pending.uid=1;pending.model=2;pending.owner=0x39FB7;pending.sender=0x100;pending.purpose=Purpose::Pocket;pending.body="Existing exact text";pending.signature="A.";
+        const auto id=key(pending);old.notes[id]=pending;old.serials[8]=1;old.actors[0x100].pocket=id;old.actors[0x100].refresh=12;
+        old.courierKey=id;old.courierTarget=0x100;old.helperDelivery=true;
+        auto loaded=decode(encode(old));require(loaded.has_value());require(legacyPocketRecipient(*loaded,id,0x39FB7)==0x100);
+        loaded->notes.at(id).owner=0x100;
+        require(!legacyPocketRecipient(*loaded,id,0x39FB7));require(loaded->notes.size()==1 && loaded->serials[8]==1);
+        require(loaded->notes.at(id).body==pending.body && loaded->notes.at(id).signature==pending.signature && loaded->notes.at(id).model==2);
+        require(loaded->actors.at(0x100).refresh==12);
+        old.actors.clear();require(legacyPocketRecipient(old,id,0x39FB7)==0x100);
+        old.notes.at(id).sender=0;require(!legacyPocketRecipient(old,id,0x39FB7));
+        for(auto purpose:{Purpose::ToPlayer,Purpose::Bundle,Purpose::HateDraft,Purpose::Delivered}) {old.notes.at(id).purpose=purpose;old.notes.at(id).sender=0x100;require(!legacyPocketRecipient(old,id,0x39FB7));}
+    }
     for (unsigned oldPercent:{1u,2u,3u,5u,20u,100u}) {
         Random reduced{42+oldPercent};unsigned successes=0;
         for (unsigned i=0;i<200000;++i) successes+=reduced.letterChance(oldPercent);
@@ -23,10 +36,9 @@ int main() {
     }
     {Random random{73};std::array<unsigned,3> amounts{};for(unsigned i=0;i<200000;++i) ++amounts[houseLetterCount(random)];require(amounts[0]>103000 && amounts[0]<107000);require(amounts[1]>83000 && amounts[1]<87000);require(amounts[2]>9000 && amounts[2]<11000);}
     {
-        std::istringstream ini("[General]\nUseNPCCourier=false\n[Debug]\nEnabled=TRUE ; test\n");auto config=readConfig(ini);require(!config.useNPCCourier && config.debug);
-        std::istringstream invalid("[General]\nUseNPCCourier=invalid\n[Debug]\nEnabled=maybe\n");config=readConfig(invalid);require(config.useNPCCourier && !config.debug);
+        std::istringstream ini("[General]\nUseNPCCourier=false\n[Debug]\nEnabled=TRUE ; test\n");auto config=readConfig(ini);require(config.debug);
+        std::istringstream invalid("[General]\nUseNPCCourier=invalid\n[Debug]\nEnabled=maybe\n");config=readConfig(invalid);require(!config.debug);
         require(debugSpawnAllowed(true,true,true,false));require(!debugSpawnAllowed(false,true,true,false));require(!debugSpawnAllowed(true,false,true,false));require(!debugSpawnAllowed(true,true,false,false));require(!debugSpawnAllowed(true,true,true,true));
-        require(useCourier(true,true,true,true));for (unsigned mask=0;mask<15;++mask) require(!useCourier(mask&1,mask&2,mask&4,mask&8));
         std::array<std::uint8_t,3> stub{0xB0,0x01,0xC3},working{0x48,0x83,0xEC};require(unusedConsoleStub(stub));require(!unusedConsoleStub(working));require(!unusedConsoleStub(std::span(stub).first(2)));
         struct Facade {std::uint8_t bytes[12];};std::array<std::uint8_t,64> memory;memory.fill(0xA5);std::size_t requested=0;
         auto* data=allocateRuntimeExtraData<Facade>([&](std::size_t bytes)->void* {requested=bytes;return memory.data();},[](void* storage) {std::fill_n(static_cast<std::uint8_t*>(storage),32,0);});require(data && requested==32);require(std::all_of(memory.begin()+32,memory.end(),[](auto b) {return b==0xA5;}));
@@ -57,8 +69,6 @@ int main() {
         migrated->notes.begin()->second.model=4;require(!decode(encode(*migrated)));
         Data helper;helper.helperDelivery=true;require(!decode(encode(helper))); // A route cannot outlive its tracked note/recipient.
     }
-    require(deliveryToken(float((223u<<16)|65535u))==((223u<<16)|65535u));
-    require(!deliveryToken(0));require(!deliveryToken(-1));require(!deliveryToken(1.5f));require(!deliveryToken(std::numeric_limits<float>::infinity()));require(!deliveryToken(float(224u<<16)));
     require(signatureFooter("A.")=="<br><br>A.");require(signatureFooter("").empty());
     Data d;d.random.value=1234;
     require(eligibleToRefresh(ActorState{},100));ActorState a;a.refresh=104;require(!eligibleToRefresh(a,103.99));require(eligibleToRefresh(a,104));

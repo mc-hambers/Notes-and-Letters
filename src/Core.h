@@ -56,15 +56,10 @@ inline unsigned forcedNPCCategory(Random& random,Role role) {
     for (unsigned c=0;c<8;++c) {unsigned weight=unsigned(categoryWeight(role,c));if (value<weight) return c;value-=weight;}
     return 7;
 }
-inline bool useCourier(bool enabled,bool questReady,bool eventReady,bool recipientSupported) {return enabled && questReady && eventReady && recipientSupported;}
 inline unsigned houseLetterCount(Random& random) {const auto roll=random.next()%200;return roll<10 ? 2 : roll<95 ? 1 : 0;}
 
 enum class Purpose : std::uint8_t { Pocket, Bundle, ToPlayer, HateDraft, Delivered };
 struct Instance { std::uint16_t text=0,uid=0; std::uint8_t model=0; std::uint32_t owner=0,sender=0,extraBase=0;std::uint16_t extraUID=0; double due=0; Purpose purpose=Purpose::Pocket;std::string body,signature; };
-inline std::optional<unsigned> deliveryToken(float value) {
-    if (!std::isfinite(value) || value<1 || value>=textCount*65536u || std::floor(value)!=value) return {};
-    return static_cast<unsigned>(value);
-}
 inline std::string signatureFooter(std::string_view escapedSignature) {return escapedSignature.empty() ? std::string{} : "<br><br>"+std::string(escapedSignature);}
 inline std::uint32_t key(const Instance& n) {return (std::uint32_t(n.text)<<16)|n.uid;}
 inline bool rebind(Instance& n,unsigned text,unsigned oldBase,unsigned oldUID,unsigned newBase,unsigned newUID) {
@@ -79,11 +74,18 @@ struct Data {
     Random random;std::array<std::uint16_t,224> serials{};
     std::unordered_map<std::uint32_t,ActorState> actors;
     std::unordered_map<std::uint32_t,Instance> notes;
+    // Retired NPC-courier fields remain in schema 2 solely for old co-save compatibility.
     std::uint32_t courierTarget=0,courierKey=0;bool sceneSeen=false,helperDelivery=false;
     double nextCourier=-1,bundleDue=-1;
     std::uint8_t homesSeen=0,homesProcessed=0;bool homesInitialized=false;
     std::array<std::uint32_t,7> houseSenders{};
 };
+inline std::optional<std::uint32_t> legacyPocketRecipient(const Data& data,unsigned id,unsigned courier) {
+    auto found=data.notes.find(id);if (found==data.notes.end() || found->second.purpose!=Purpose::Pocket || found->second.owner!=courier) return {};
+    for (const auto& [recipient,state]:data.actors) if (recipient && recipient!=courier && state.pocket==id) return recipient;
+    if (found->second.sender && found->second.sender!=courier) return found->second.sender;
+    return {};
+}
 inline bool eligibleToRefresh(const ActorState& s,double now) {return s.refresh<0 || now>=s.refresh;}
 inline bool npcRefreshDue(const ActorState& s,double day,bool repeat) {return repeat || eligibleToRefresh(s,day);}
 inline bool emptyLegacyState(const Data& d) {

@@ -1,19 +1,14 @@
-# Validation — 1.0.1 development build
+# Validation — Notes and Letters 1.1.0
 
-The x64 DLL, native core tests and package/binary checks must pass before release. Core checks cover half-rate generation (including fractional 0.5% chances), house outcomes, category restrictions, persistence, old-save decoding, refresh timers, book variants, event callback IDs, debug forcing and duplicate prevention. Package checks cover all 896 BOOK records, stable FormIDs, inert compatibility records, optional event patch structure, binary metadata, licensing and exact archived payloads.
+Automated checks cover stable save schema 2, old pending-pocket recipient recovery, one-copy/idempotent migration, preserving text/signature/model/IDs, excluding player letters/bundles/hate drafts, regular-vs-repeat-combat chances, old-save decoding, timers, gifts of existing notes, duplicate prevention, native allocation and book identity. Binary/package checks validate x64 exports/version, all 896 BOOK records, stable IDs, inert helper records, exact package payloads and archive integrity.
 
-## Required in-game checks (not performed)
+## Required Skyrim acceptance (unrun)
 
-1. Update an existing save with its matching SKSE co-save; verify existing notes, signatures, paper styles, timers and house decisions survive.
-2. Preview, open, transfer, drop and reload personalized notes without crashes or lost text.
-3. Verify regular NPC odds are 1/2/3% and repeat combat NPC odds are 0.5/1/1.5% per existing refresh; player spouse/jealousy/friend/hate chances are 2.5/0.5/1/0.5%; investment chance is 10%. Confirm no extra rolls from inventory or cell loading.
-4. Verify courier bundle refresh has a 50% generation chance, producing 2–4 notes on success; pending and stolen copies remain protected.
-5. Verify new house decisions use 42.5% one, 5% two and 52.5% no letters, with no rerolls of saved decisions.
-6. Test direct placement without the optional courier patch and exact-copy event delivery with Courier Delivers to NPCs 1.0.4 plus the patch. Test busy/failure retry, vanilla delivery priority, save/load and interrupted travel.
-7. Test hate draft theft/death cancellation, investment attribution, spouse/relationship eligibility, and all debug commands.
+1. Load a matching ESS/SKSE save with queued NPC notes, both with the old addon absent and left installed. Confirm each original note moves once to the correct NPC; reloading/repeated scans must not create another copy or change collected text/signatures/models.
+2. Check unloaded, dead and disabled recipients, already-delivered copies, stolen/missing queued copies and deleted/unresolvable recipients. Never regenerate a missing physical copy.
+3. Generate ordinary NPC notes and use NLSpawnNote/NLRepeatNotes. Confirm direct inventories without external event requests or NPC-courier movement.
+4. Remove the obsolete event ESP/PEX, retaining NotesAndLetters.esp and the matched co-save. Confirm update compatibility and original player-letter behavior.
+5. Run NLDebug then NLDeliverPlayerNote (or NLDeliverNote), without any qualifying relationship/investment/home. Confirm one test player letter, native courier arrival and dialogue, no crosshair requirement and no lasting bypass. Repeat during an existing player delivery; do not reset or teleport that active courier.
+6. Test failed quest startup, indoors/outdoors, travel, paused console, player combat, normal later spouse/friend/hate/investment/home letters and reading/transfer/save persistence.
 
-Old helper QUST/PACK records and serialized migration fields are deliberately retained, inactive, for save compatibility. The old scene/alias/AI adapter is not used. No companion mod files are edited or redistributed.
-
-## 1.0.1 population split
-
-Core tests compare regular and repeat-combat rates, named-vs-generic classification, bandit handling and category exclusions. Vanilla combat faction IDs were read directly from the installed Skyrim.esm. Required unrun gameplay: regular residents and guards, generic Imperial/Stormcloak soldiers, named faction members, Forsworn/bandits and each mapped enemy faction; confirm updates preserve existing note instances and timers. This is a classification change, not a delivery or player-letter change.
+All live inventory, VM, alias, courier pathing and dialogue assertions require Skyrim. Pure tests and compilation cannot prove them.

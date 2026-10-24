@@ -24,15 +24,14 @@ std::string first(std::string s) {auto p=s.find(' ');return s.substr(0,p);}
 std::string initial(std::string s) {if (s.empty()) return "?";auto c=static_cast<unsigned char>(s[0]);unsigned count=c<0x80 ? 1 : c<0xE0 ? 2 : c<0xF0 ? 3 : 4;return s.substr(0,count)+".";}
 struct Movement {unsigned book,uid,oldOwner,newOwner;};
 struct UniqueChange {unsigned book,oldBase,newBase,oldUID,newUID;};
-struct DeliveryNotice {unsigned note;bool ready;};
-class Manager final : public RE::BSTEventSink<RE::TESObjectLoadedEvent>,public RE::BSTEventSink<RE::TESContainerChangedEvent>,public RE::BSTEventSink<RE::TESTrackedStatsEvent>,public RE::BSTEventSink<RE::TESUniqueIDChangeEvent>,public RE::BSTEventSink<SKSE::CrosshairRefEvent>,public RE::BSTEventSink<SKSE::ModCallbackEvent> {
+class Manager final : public RE::BSTEventSink<RE::TESObjectLoadedEvent>,public RE::BSTEventSink<RE::TESContainerChangedEvent>,public RE::BSTEventSink<RE::TESTrackedStatsEvent>,public RE::BSTEventSink<RE::TESUniqueIDChangeEvent>,public RE::BSTEventSink<SKSE::CrosshairRefEvent> {
 public:
     static Manager& get() {static Manager m;return m;}
-    Config config;RE::ObjectRefHandle debugTarget;bool repeatNotes=false,eventBridgeReady=false;
+    Config config;RE::ObjectRefHandle debugTarget;bool repeatNotes=false;
     Data data;std::atomic_bool active{false};std::atomic_uint64_t session{0};bool valid=true;
     std::array<RE::TESObjectBOOK*,textCount*modelCount> books{};
     std::vector<unsigned> remoteActors;std::size_t remoteCursor=0;std::chrono::steady_clock::time_point discoveredAt{};
-    RE::TESQuest *npcQuest=nullptr,*playerQuest=nullptr,*marriage=nullptr;
+    RE::TESQuest *playerQuest=nullptr,*marriage=nullptr;
     RE::TESObjectREFR *courier=nullptr,*container=nullptr;RE::TESGlobal* itemCount=nullptr;
     RE::BGSKeyword* habitation=nullptr;
     std::array<RE::TESObjectCELL*,7> homes{};
@@ -47,7 +46,6 @@ public:
             if (books[i] && !books[i]->inventoryModel && art) {books[i]->inventoryModel=art;++repairedArt;}
         }
         logger::info("Paper-note model variants={}; repaired {} missing art links",modelCount,repairedArt);
-        npcQuest=h->LookupForm<RE::TESQuest>(0x800,"WICourierRadiant.esp");
         playerQuest=h->LookupForm<RE::TESQuest>(0x39F82,"Skyrim.esm");marriage=h->LookupForm<RE::TESQuest>(0x21382,"Skyrim.esm");
         courier=resolveReference<RE::TESObjectREFR>(h,0x39FB7);container=resolveReference<RE::TESObjectREFR>(h,0x39FB9);itemCount=h->LookupForm<RE::TESGlobal>(0x39FBB,"Skyrim.esm");
         habitation=h->LookupForm<RE::BGSKeyword>(0x39793,"Skyrim.esm");
@@ -61,35 +59,23 @@ public:
         logger::info("Required forms: books={}/896, player quest={}, courier ACHR={}, container={}, item count={}, habitation={}",resolved,playerQuest!=nullptr,courier!=nullptr,container!=nullptr,itemCount!=nullptr,habitation!=nullptr);
         if (!formsReady) logger::error("Missing required records; enable NotesAndLetters.esp and check the required-form diagnostic above");
         if (auto* crosshair=SKSE::GetCrosshairRefEventSource()) crosshair->AddEventSink(this);
-        if (auto* events=SKSE::GetModCallbackEventSource()) events->AddEventSink(this);
         auto* src=RE::ScriptEventSourceHolder::GetSingleton();src->AddEventSink<RE::TESObjectLoadedEvent>(this);src->AddEventSink<RE::TESContainerChangedEvent>(this);src->AddEventSink<RE::TESTrackedStatsEvent>(this);src->AddEventSink<RE::TESUniqueIDChangeEvent>(this);
-        logger::info("Catalog resolved={}; NPC courier integration={}; optional Shadowfoot cell={}",formsReady,eventBridgeReady,homes[6]!=nullptr);
-        logger::info("NPC courier requested={}; available={}; direct-placement fallback active={}",config.useNPCCourier,eventBridgeReady,!useCourier(config.useNPCCourier,npcQuest!=nullptr,eventBridgeReady,true));
+        logger::info("Catalog resolved={}; NPC notes use direct inventories; optional Shadowfoot cell={}",formsReady,homes[6]!=nullptr);
         worker=std::jthread([this](std::stop_token stop) {unsigned tick=0;while (!stop.stop_requested()) {std::this_thread::sleep_for(250ms);if (active && !stop.stop_requested()) {if (++tick%10==0) queueScan();}}});
     }
-    void reset() {remoteActors.clear();remoteCursor=0;discoveredAt={};repeatNotes=false;debugTarget={};active=false;++session;valid=true;data={};data.random.value=std::chrono::high_resolution_clock::now().time_since_epoch().count();queued=false;{std::scoped_lock lock(inboxMutex);movements.clear();uniqueChanges.clear();investments.clear();deliveryNotices.clear();}}
+    void reset() {remoteActors.clear();remoteCursor=0;discoveredAt={};repeatNotes=false;debugTarget={};active=false;++session;valid=true;data={};data.random.value=std::chrono::high_resolution_clock::now().time_since_epoch().count();queued=false;{std::scoped_lock lock(inboxMutex);movements.clear();uniqueChanges.clear();investments.clear();}}
     std::string inactiveReason() const {
         if (!formsReady) return "Notes and Letters: required game/plugin records are unresolved. Enable NotesAndLetters.esp; see the Required forms line in NotesAndLetters.log.";
         if (!valid) return "Notes and Letters: saved note metadata is unreadable. Load an earlier matching ESS/SKSE save; existing notes have not been regenerated.";
         return "Notes and Letters: no active loaded game. Load a save and wait for startup.";
-    }
-    void refreshEventBridge() {
-        bool available=false;
-        if (config.useNPCCourier && npcQuest) {
-            auto* vm=RE::BSScript::Internal::VirtualMachine::GetSingleton();RE::BSTSmartPointer<RE::BSScript::Object> script;
-            auto handle=vm->GetObjectHandlePolicy()->GetHandleForObject(npcQuest->GetFormType(),npcQuest);
-            available=vm->FindBoundObject(handle,"NL_NPCNoteDelivery",script) && script;
-        }
-        if (available!=eventBridgeReady) logger::info("Optional courier delivery event available={}",available);
-        eventBridgeReady=available;
     }
     void enter() {
         if (!formsReady || !valid) {active=false;report(inactiveReason());return;}
         // Save compatibility only: stop the retired helper without operating its AI or aliases.
         if (auto* legacy=RE::TESDataHandler::GetSingleton()->LookupForm<RE::TESQuest>(0xC00,"NotesAndLetters.esp");legacy && legacy->IsRunning()) {legacy->Stop();logger::info("Stopped retired courier helper quest");}
         data.helperDelivery=false;data.courierKey=0;data.courierTarget=0;data.sceneSeen=false;
-        queued=false;notificationOutstanding=false;active=true;refreshEventBridge();queueScan();
-        logger::info("Notes enabled: {} NPC states, {} note instances; courier event={}",data.actors.size(),data.notes.size(),eventBridgeReady);
+        queued=false;notificationOutstanding=false;active=true;queueScan();
+        logger::info("Notes enabled: {} NPC states, {} note instances; NPC placement is direct",data.actors.size(),data.notes.size());
     }
     template<class F> void queue(F f) {auto epoch=session.load();SKSE::GetTaskInterface()->AddTask([this,epoch,f=std::move(f)] {if (active && session==epoch) f();});}
     void queueScan() {if (queued.exchange(true)) return;queue([this] {queued=false;scan();});}
@@ -125,13 +111,6 @@ public:
         const bool combat=std::any_of(combatFactions.begin(),combatFactions.end(),[&](unsigned id) {return faction(a,id);});
         return rarePocketPopulation(role(a)==Bandit,a->GetActorBase()->IsUnique(),combat);
     }
-    bool courierEligible(RE::Actor* a) const {return useCourier(config.useNPCCourier,npcQuest!=nullptr,eventBridgeReady,eligible(a) && a->GetActorBase()->IsUnique() && settlement(a->GetCurrentLocation()) && role(a)!=Bandit);}
-    bool visibleRecipient(RE::Actor* actor) const {
-        auto* player=RE::PlayerCharacter::GetSingleton();if (!actor || !player || !actor->Is3DLoaded()) return false;
-        auto* cell=actor->GetParentCell();auto* playerCell=player->GetParentCell();
-        return cell && playerCell && (cell==playerCell || (!cell->IsInteriorCell() && !playerCell->IsInteriorCell() && actor->GetWorldspace()==player->GetWorldspace()));
-    }
-    bool routeCourier(RE::Actor* actor) const {return courierEligible(actor) && visibleRecipient(actor) && settlement(actor->GetCurrentLocation())==settlement(RE::PlayerCharacter::GetSingleton()->GetCurrentLocation());}
     RE::TESObjectBOOK* bookFor(const Instance& note) const {return note.model<modelCount && note.text<textCount ? books[note.model*textCount+note.text] : nullptr;}
     unsigned pick(unsigned category) {std::vector<unsigned> choices;for (unsigned i=0;i<224;++i) if (catalog[i].category==category) choices.push_back(i);return choices[data.random.next()%choices.size()];}
     std::string signature() {constexpr std::string_view letters="ABDEGHJKLMNRSTV";std::string s;s+=letters[data.random.next()%letters.size()];s+='.';if (data.random.chance(40)) {s+=' ';s+=letters[data.random.next()%letters.size()];s+='.';}return s;}
@@ -195,9 +174,41 @@ public:
             else {std::string sign=i==0 ? first(a->GetName()) : i==1 ? initial(a->GetName()) : data.random.chance(50) ? a->GetName() : initial(a->GetName());directPlayerLetter(categories[i],a,std::move(sign));}
         }
     }
+    void recoverQueuedNPCNotes() {
+        std::vector<std::pair<unsigned,unsigned>> pending;
+        for (const auto& [id,note]:data.notes) if (auto recipient=legacyPocketRecipient(data,id,courier->GetFormID())) pending.emplace_back(id,*recipient);
+        for (auto [noteID,recipientID]:pending) {
+            auto it=data.notes.find(noteID);auto* recipient=RE::TESForm::LookupByID<RE::Actor>(recipientID);
+            if (it==data.notes.end() || !recipient || recipient->IsDeleted()) continue;
+            // Never create a replacement: move the tracked physical copy or recognize its prior arrival.
+            bool recovered=false;
+            if (find(recipient,it->second)) {it->second.owner=recipientID;recovered=true;logger::info("Recovered already-delivered NPC note {:08X} for {:08X}",noteID,recipientID);}
+            else if (find(courier,it->second) && transfer(noteID,courier,recipient)) {recovered=true;logger::info("Migrated queued NPC note {:08X} directly to {:08X}",noteID,recipientID);}
+            if (recovered) if (auto state=data.actors.find(recipientID);state!=data.actors.end() && state->second.pocket==noteID) state->second.refresh=now()+data.random.days(3,5);
+        }
+    }
+    void debugPlayerDelivery() {
+        if (!config.debug) {report("Notes and Letters: run NLDebug first, then NLDeliverPlayerNote.");return;}
+        if (!active || !valid || !formsReady) {report(inactiveReason());return;}
+        flush();auto* player=RE::PlayerCharacter::GetSingleton();if (!player || !player->Is3DLoaded()) {report("Notes and Letters: load a playable save first.");return;}
+        std::vector<unsigned> choices;for (unsigned i=0;i<catalog.size();++i) if (catalog[i].category>=8) choices.push_back(i);
+        const unsigned index=choices[data.random.next()%choices.size()];
+        auto note=create(index,container,Purpose::ToPlayer,nullptr,signature(),"a local shop");
+        if (!note) {report("Notes and Letters: test letter could not be created.");return;}
+        notifyCourier();
+        // Test-only dispatch attempt. Never stop/reset an existing player delivery or change permanent conditions.
+        const bool running=playerQuest->IsRunning();
+        const bool started=running || playerQuest->Start();
+        if (started) {
+            if (!running) {courier->MoveTo(player);courier->Enable(false);}
+            if (auto* actor=courier->As<RE::Actor>()) actor->EvaluatePackage();
+        }
+        report(fmt::format("Notes and Letters: test player letter '{}' queued ({:08X}). {} Close the console; if the courier is not dispatched yet, enter a settlement/change location.",catalog[index].title,*note,started ? "Vanilla courier quest active." : "Vanilla dispatch is pending."));
+    }
     void visit(RE::Actor* a,bool relationships=true) {
         if (!eligible(a)) return;const auto id=a->GetFormID();if (data.actors.size()>=100000 && !data.actors.contains(id)) return;
         auto& s=data.actors[id];double day=now();
+        if (s.pocket && legacyPocketRecipient(data,s.pocket,courier->GetFormID())) {if (relationships) playerLetters(a,s,day);return;}
         logger::debug("NPC check {:08X}: role={}, refresh={}, day={}, outstanding={}",id,unsigned(role(a)),s.refresh,day,s.pocket);
         if (npcRefreshDue(s,day,repeatNotes)) {
             s.refresh=day+data.random.days(3,5);
@@ -208,37 +219,25 @@ public:
                 else if (owner==a && (repeatNotes || data.random.chance(50))) {if (transfer(s.pocket,owner,nullptr)) s.pocket=0;}
             }
             if (!s.pocket) if (auto category=repeatNotes ? std::optional<unsigned>(forcedNPCCategory(data.random,role(a))) : rollNPC(data.random,role(a),rarerPocketNPC(a))) {
-                logger::debug("NPC roll succeeded {:08X}: category={}, courier={}",id,*category,routeCourier(a));
-                // A supported recipient waits for a real courier handoff; unsupported recipients get it directly.
-                auto* owner=routeCourier(a) ? courier : static_cast<RE::TESObjectREFR*>(a);
-                if (auto note=create(pick(*category),owner,Purpose::Pocket)) {s.pocket=*note;data.notes.at(*note).sender=id;}
-            }
-        }
-        if (s.pocket && !routeCourier(a)) {
-            auto pending=data.notes.find(s.pocket);
-            if (pending!=data.notes.end() && pending->second.owner==courier->GetFormID()) {
-                if (transfer(s.pocket,courier,a)) {s.refresh=day+data.random.days(3,5);logger::info("Direct fallback delivered pending note to {:08X}",id);}
-                if (data.courierKey==s.pocket) {data.courierKey=0;data.courierTarget=0;data.sceneSeen=false;}
+                logger::debug("NPC roll succeeded {:08X}: category={}, direct inventory",id,*category);
+                if (auto note=create(pick(*category),a,Purpose::Pocket)) {s.pocket=*note;data.notes.at(*note).sender=id;}
             }
         }
         if (relationships) playerLetters(a,s,day);
     }
     static void report(const std::string& text) {logger::info("{}",text);if (auto* console=RE::ConsoleLog::GetSingleton()) console->Print("%s",text.c_str());}
-    void setDebug(bool enabled) {config.debug=enabled;if (!enabled && repeatNotes) {repeatNotes=false;data.nextCourier=now()+0.5;}spdlog::set_level(enabled ? spdlog::level::debug : spdlog::level::info);spdlog::flush_on(enabled ? spdlog::level::debug : spdlog::level::info);report(enabled ? "Notes and Letters: debug mode ON" : "Notes and Letters: debug mode OFF");}
+    void setDebug(bool enabled) {config.debug=enabled;if (!enabled && repeatNotes) {repeatNotes=false;}spdlog::set_level(enabled ? spdlog::level::debug : spdlog::level::info);spdlog::flush_on(enabled ? spdlog::level::debug : spdlog::level::info);report(enabled ? "Notes and Letters: debug mode ON" : "Notes and Letters: debug mode OFF");}
     void toggleRepeat() {
         if (!config.debug) {report("Notes and Letters: enable debug mode with NLDebug first.");return;}
         if (!active || !valid || !formsReady) {report(inactiveReason());return;}
         repeatNotes=!repeatNotes;
-        if (!repeatNotes) {data.nextCourier=repeatNotes ? now() : now()+0.5;report("Notes and Letters: repeat mode OFF. Normal NPC chances, refresh delays, and courier cooldown resume.");return;}
-        report("Notes and Letters: repeat mode ON. NPC refresh waits are bypassed, note rolls always succeed, and courier cooldown is zero; one pending note per NPC.");
-        if (!useCourier(config.useNPCCourier,npcQuest!=nullptr,eventBridgeReady,true)) report("Notes and Letters: NPC courier integration is unavailable/disabled; repeat notes use direct inventory placement.");
-        else report("Notes and Letters: close the console; eligible requests now use the optional courier delivery event.");
-        queueScan();
+        if (!repeatNotes) {report("Notes and Letters: repeat mode OFF. Normal NPC chances and refresh delays resume.");return;}
+        report("Notes and Letters: repeat mode ON. NPC rolls are forced with zero refresh delay; notes go directly into NPC inventories.");
     }
-    void debugSpawn(bool deliver=false) {
+    void debugSpawn() {
         if (!config.debug) {report("Notes and Letters: run NLDebug to enable debug mode first.");return;}
         if (!active || !valid) {report(inactiveReason());return;}
-        flush();auto target=debugTarget.get();
+        flush();recoverQueuedNPCNotes();auto target=debugTarget.get();
         if (!target) if (auto* crosshair=RE::CrosshairPickData::GetSingleton()) target=crosshair->GetActiveTarget().get();
         auto* actor=target ? target->As<RE::Actor>() : nullptr;
         if (!eligible(actor) || !actor->Is3DLoaded()) {report("Notes and Letters: aim at an eligible living adult NPC, then open the console.");return;}
@@ -251,11 +250,9 @@ public:
         }
         if (!debugSpawnAllowed(config.debug,active,eligible(actor),state.pocket!=0)) {report("Notes and Letters: this NPC already has an outstanding pocket note (including queued deliveries).");return;}
         const auto occupation=role(actor);const auto category=forcedNPCCategory(data.random,occupation);const auto index=pick(category);
-        auto* owner=deliver && routeCourier(actor) ? courier : static_cast<RE::TESObjectREFR*>(actor);
+        auto* owner=static_cast<RE::TESObjectREFR*>(actor);
         if (auto id=create(index,owner,Purpose::Pocket)) {
             state.pocket=*id;data.notes.at(*id).sender=actorID;state.refresh=now()+data.random.days(3,5);
-            if (owner==courier) {report("Notes and Letters: delivery event queued; close the console so the courier can approach.");queue([this] {deliveries();});}
-            else if (deliver) report("Notes and Letters: event patch unavailable or recipient unsupported; placed directly in inventory.");
             report(fmt::format("Notes and Letters: '{}' created to {} ({:08X}); category {}, role {}, refresh day {:.3f}.",catalog[index].title,actor->GetName(),actorID,category,unsigned(occupation),state.refresh));
         } else report("Notes and Letters: note creation failed; see NotesAndLetters.log.");
     }
@@ -264,10 +261,8 @@ public:
         return RE::BSEventNotifyControl::kContinue;
     }
     void flush() {
-        std::vector<DeliveryNotice> completed;
         std::vector<Movement> moved;std::vector<unsigned> invested;std::vector<UniqueChange> changed;
-        {std::scoped_lock lock(inboxMutex);moved.swap(movements);invested.swap(investments);changed.swap(uniqueChanges);completed.swap(deliveryNotices);}
-        for (const auto& notice:completed) deliveryResult(notice);
+        {std::scoped_lock lock(inboxMutex);moved.swap(movements);invested.swap(investments);changed.swap(uniqueChanges);}
         for (auto e:changed) {
             auto it=std::find_if(books.begin(),books.end(),[e](auto* b) {return b && b->GetFormID()==e.book;});if (it==books.end()) continue;
             const auto index=unsigned(it-books.begin())%textCount;
@@ -301,41 +296,6 @@ public:
         const unsigned target=2+unsigned(data.random.next()%3);
         for (unsigned i=0;i<target;++i) create(pick(unsigned(data.random.next()%8)),courier,Purpose::Bundle);
     }
-    void deliveryResult(const DeliveryNotice& notice) {
-        if (notice.note!=data.courierKey) return;
-        auto it=data.notes.find(notice.note);auto* recipient=RE::TESForm::LookupByID<RE::Actor>(data.courierTarget);
-        bool handed=false;
-        if (notice.ready && it!=data.notes.end() && eligible(recipient) && it->second.owner==courier->GetFormID()) handed=transfer(notice.note,courier,recipient);
-        if (handed) {data.actors[recipient->GetFormID()].refresh=now()+data.random.days(3,5);logger::info("Courier event delivered exact note {:08X} to {:08X}",notice.note,recipient->GetFormID());}
-        else logger::debug("Courier event deferred/failed for note {:08X}; pending copy retained",notice.note);
-        data.courierKey=0;data.courierTarget=0;data.sceneSeen=false;
-        data.nextCourier=repeatNotes ? now() : now()+(handed ? 0.5 : 0.02);
-    }
-    void deliveries() {
-        if (!active || !eventBridgeReady || !RE::UI::GetSingleton() || RE::UI::GetSingleton()->GameIsPaused() || data.courierKey) return;
-        if (!repeatNotes && now()<data.nextCourier) return;
-        auto* calendar=RE::Calendar::GetSingleton();if (!repeatNotes && (calendar->GetHour()<8 || calendar->GetHour()>=20)) return;
-        std::vector<unsigned> recipients;for (const auto& [id,state]:data.actors) if (state.pocket) recipients.push_back(id);
-        std::sort(recipients.begin(),recipients.end());std::rotate(recipients.begin(),std::upper_bound(recipients.begin(),recipients.end(),lastDebugRecipient),recipients.end());
-        for (auto id:recipients) {
-            auto& state=data.actors.at(id);auto note=data.notes.find(state.pocket);auto* actor=RE::TESForm::LookupByID<RE::Actor>(id);
-            if (note==data.notes.end() || note->second.owner!=courier->GetFormID() || !routeCourier(actor) || !find(courier,note->second)) continue;
-            data.courierKey=state.pocket;data.courierTarget=id;lastDebugRecipient=id;
-            auto* vm=RE::BSScript::Internal::VirtualMachine::GetSingleton();auto handle=vm->GetObjectHandlePolicy()->GetHandleForObject(npcQuest->GetFormType(),npcQuest);
-            vm->SendEvent(handle,"OnNLDeliverNote",RE::MakeFunctionArguments(static_cast<RE::Actor*>(actor),static_cast<std::int32_t>(state.pocket)));
-            logger::info("Sent simple courier delivery event for note {:08X} to {:08X}",state.pocket,id);break;
-        }
-    }
-    RE::BSEventNotifyControl ProcessEvent(const SKSE::ModCallbackEvent* e,RE::BSTEventSource<SKSE::ModCallbackEvent>*) override {
-        if (e && active && e->sender==npcQuest && deliveryToken(e->numArg).has_value()) {
-            const std::string_view name=e->eventName.c_str();
-            if (name=="NL_NoteDeliveryReady" || name=="NL_NoteDeliveryFailed" || name=="NL_NoteDeliveryBusy") {
-                {std::scoped_lock lock(inboxMutex);deliveryNotices.push_back({static_cast<unsigned>(e->numArg),name=="NL_NoteDeliveryReady"});}
-                queue([this] {flush();});
-            }
-        }
-        return RE::BSEventNotifyControl::kContinue;
-    }
     void houseLetters(const std::vector<RE::Actor*>& actors) {
         auto* player=RE::PlayerCharacter::GetSingleton();unsigned owned=0;
         for (unsigned i=0;i<7;++i) if (homes[i]) {
@@ -368,14 +328,15 @@ public:
         for (unsigned i=0;i<budget;++i) {if (remoteCursor>=remoteActors.size()) remoteCursor=0;auto id=remoteActors[remoteCursor++];if (!loaded.contains(id)) if (auto* actor=RE::TESForm::LookupByID<RE::Actor>(id);eligible(actor)) visit(actor,false);}
     }
     void scan() {
-        refreshEventBridge();flush();auto* player=RE::PlayerCharacter::GetSingleton();if (!player || !player->Is3DLoaded() || !RE::UI::GetSingleton() || RE::UI::GetSingleton()->GameIsPaused()) return;
+        flush();auto* player=RE::PlayerCharacter::GetSingleton();if (!player || !player->Is3DLoaded() || !RE::UI::GetSingleton() || RE::UI::GetSingleton()->GameIsPaused()) return;
+        recoverQueuedNPCNotes();
         if (itemCount->value>0) notificationOutstanding=false;
         else if (std::any_of(data.notes.begin(),data.notes.end(),[this](const auto& row) {return row.second.purpose==Purpose::ToPlayer && row.second.owner==container->GetFormID();})) notifyCourier();
         std::vector<RE::Actor*> actors;RE::ProcessLists::GetSingleton()->ForEachHighActor([&](RE::Actor* a) {actors.push_back(a);return RE::BSContainer::ForEachResult::kContinue;});
         std::set<unsigned> loaded;for (auto* a:actors) {loaded.insert(a->GetFormID());visit(a);}
         remoteNotes(loaded);
         if (auto* s=spouse();eligible(s) && std::find(actors.begin(),actors.end(),s)==actors.end()) playerLetters(s,data.actors[s->GetFormID()],now());
-        delayedLetters();bundles();deliveries();houseLetters(actors);
+        delayedLetters();bundles();houseLetters(actors);
     }
     std::string description(RE::TESObjectBOOK* b,RE::ExtraDataList* extras) const {
         auto it=std::find(books.begin(),books.end(),b);if (it==books.end() || !extras) return {};
@@ -395,7 +356,7 @@ public:
         if (e && active && e->stat=="Stores Invested In") {auto* topics=RE::MenuTopicManager::GetSingleton();auto ref=topics ? topics->speaker.get() : RE::TESObjectREFRPtr{};if (!ref && topics) ref=topics->lastSpeaker.get();auto* a=ref ? ref->As<RE::Actor>() : nullptr;if (a && eligible(a)) {std::scoped_lock lock(inboxMutex);investments.push_back(a->GetFormID());}else logger::warn("Investment stat changed without a resolvable dialogue merchant; skipped rather than guessing sender");}return RE::BSEventNotifyControl::kContinue;
     }
 private:
-    unsigned lastDebugRecipient=0;bool formsReady=false,notificationOutstanding=false;std::atomic_bool queued{false};std::mutex inboxMutex;std::vector<Movement> movements;std::vector<UniqueChange> uniqueChanges;std::vector<unsigned> investments;std::vector<DeliveryNotice> deliveryNotices;std::jthread worker;
+    bool formsReady=false,notificationOutstanding=false;std::atomic_bool queued{false};std::mutex inboxMutex;std::vector<Movement> movements;std::vector<UniqueChange> uniqueChanges;std::vector<unsigned> investments;std::jthread worker;
 };
 struct DebugCommands {
     static bool toggle(const RE::SCRIPT_PARAMETER*,RE::SCRIPT_FUNCTION::ScriptData*,RE::TESObjectREFR*,RE::TESObjectREFR*,RE::Script*,RE::ScriptLocals*,double& result,std::uint32_t&) {
@@ -404,23 +365,23 @@ struct DebugCommands {
     static bool spawn(const RE::SCRIPT_PARAMETER*,RE::SCRIPT_FUNCTION::ScriptData*,RE::TESObjectREFR*,RE::TESObjectREFR*,RE::Script*,RE::ScriptLocals*,double& result,std::uint32_t&) {
         Manager::get().debugSpawn();result=1;return true;
     }
-    static bool deliver(const RE::SCRIPT_PARAMETER*,RE::SCRIPT_FUNCTION::ScriptData*,RE::TESObjectREFR*,RE::TESObjectREFR*,RE::Script*,RE::ScriptLocals*,double& result,std::uint32_t&) {Manager::get().debugSpawn(true);result=1;return true;}
+    static bool deliver(const RE::SCRIPT_PARAMETER*,RE::SCRIPT_FUNCTION::ScriptData*,RE::TESObjectREFR*,RE::TESObjectREFR*,RE::Script*,RE::ScriptLocals*,double& result,std::uint32_t&) {Manager::get().debugPlayerDelivery();result=1;return true;}
     static bool repeat(const RE::SCRIPT_PARAMETER*,RE::SCRIPT_FUNCTION::ScriptData*,RE::TESObjectREFR*,RE::TESObjectREFR*,RE::Script*,RE::ScriptLocals*,double& result,std::uint32_t&) {
         auto& m=Manager::get();m.toggleRepeat();result=m.repeatNotes ? 1.0 : 0.0;return true;
     }
-    static bool installOne(std::string_view slot,const char* name,const char* help,RE::SCRIPT_FUNCTION::Execute_t* execute) {
+    static bool installOne(std::string_view slot,const char* name,const char* help,RE::SCRIPT_FUNCTION::Execute_t* execute,const char* alias="") {
         // Reuse verified no-op developer slots, never a working command or another plugin's handler.
         auto* command=RE::SCRIPT_FUNCTION::LocateConsoleCommand(slot);if (!command || !command->executeFunction) {logger::error("Cannot register {}: unused console slot missing",name);return false;}
         const auto address=reinterpret_cast<std::uintptr_t>(command->executeFunction);const auto text=REL::Module::get().segment(REL::Segment::textx);
         if (address<text.address() || address+3>text.address()+text.size() || !unusedConsoleStub({reinterpret_cast<const std::uint8_t*>(address),3})) {logger::error("Cannot register {}: {} is not an untouched no-op slot",name,slot);return false;}
-        auto replacement=*command;replacement.functionName=name;replacement.shortName="";replacement.helpString=help;replacement.referenceFunction=false;replacement.SetParameters();replacement.executeFunction=execute;replacement.conditionFunction=nullptr;
+        auto replacement=*command;replacement.functionName=name;replacement.shortName=alias;replacement.helpString=help;replacement.referenceFunction=false;replacement.SetParameters();replacement.executeFunction=execute;replacement.conditionFunction=nullptr;
         REL::safe_write(reinterpret_cast<std::uintptr_t>(command),&replacement,sizeof(replacement));logger::info("Registered console command {} in unused {} slot",name,slot);return true;
     }
     static void install() {
         installOne("TestSeenData","NLDebug","Toggle Notes and Letters debug mode for this session",toggle);
         installOne("TestLocalMap","NLSpawnNote","Force one allowed NPC note onto the crosshair NPC (debug mode required)",spawn);
-        installOne("OutputAllocations","NLDeliverNote","Force a note for the crosshair NPC and request courier delivery",deliver);
-        installOne("OutputMemStats","NLRepeatNotes","Toggle zero-delay NPC note/courier repeat testing (debug mode required)",repeat);
+        installOne("OutputAllocations","NLDeliverPlayerNote","Force a random player letter and request vanilla courier delivery (debug mode required)",deliver,"NLDeliverNote");
+        installOne("OutputMemStats","NLRepeatNotes","Toggle zero-delay direct NPC note repeat testing (debug mode required)",repeat);
     }
 };
 struct BookHook {
@@ -466,7 +427,7 @@ void message(SKSE::MessagingInterface::Message* e) {
 }
 SKSEPluginLoad(const SKSE::LoadInterface* skse) {
     SKSE::Init(skse);if (auto path=SKSE::log::log_directory()) {auto sink=std::make_shared<spdlog::sinks::basic_file_sink_mt>((*path/"NotesAndLetters.log").string(),true);spdlog::set_default_logger(std::make_shared<spdlog::logger>("NotesAndLetters",std::move(sink)));spdlog::set_level(spdlog::level::info);spdlog::flush_on(spdlog::level::info);}
-    logger::info("Notes and Letters 1.0.1 development build; runtime {}",REL::Module::get().version().string());
+    logger::info("Notes and Letters 1.1.0 development build; runtime {}",REL::Module::get().version().string());
     const auto version=REL::Module::get().version();const std::set<unsigned> ae{317,318,323,342,353,629,640,659,1130,1170,1179};
     if (!(version.major()==1 && ((version.minor()==5 && version.patch()==97) || (version.minor()==6 && ae.contains(version.patch())) || (version.minor()==7 && (version.patch()==99 || version.patch()==104))))) {logger::error("Unsupported runtime");return false;}
     auto* api=SKSE::GetSerializationInterface();if (!api || !SKSE::GetTaskInterface()) return false;

@@ -9,10 +9,9 @@ import zipfile
 from pathlib import Path
 from build_content import main as content
 from verify_binary import main as binary
-from build_courier_event import main as courier_event
 
 ROOT=Path(__file__).resolve().parents[1]
-VERSION='1.0.1'
+VERSION='1.1.0'
 
 def validate_esp(path):
     raw=path.read_bytes();tag,size,flags=struct.unpack_from('<4sII',raw);assert tag==b'TES4' and flags&0x200
@@ -43,9 +42,11 @@ def validate_esp(path):
 
 def main():
     content()
-    event_report=courier_event()
+    native=(ROOT/'src/Plugin.cpp').read_text(encoding='utf-8')
+    assert not any(name in native for name in ('WICourierRadiant.esp','OnNLDeliverNote','routeCourier','refreshEventBridge'))
+    assert 'if (relationships) playerLetters(a,s,day);' in native
+    assert 'NLDeliverPlayerNote' in native and 'recoverQueuedNPCNotes();' in native
     result=binary()
-    result['optional_event_patch']=event_report
     test=subprocess.run([str(ROOT/'build/NoteTests.exe')],capture_output=True,text=True,check=True)
     result['core_behavior_checks']=int(re.search(r'Passed (\d+) note behavior checks',test.stdout)[1])
     package=ROOT/'build/package'
@@ -57,12 +58,12 @@ def main():
     result['paper_note_inventory_art']=['Skyrim.esm|097788','Skyrim.esm|01541B','Skyrim.esm|01541C','Skyrim.esm|015421']
     result['off_cell_npc_distribution']=True
     result['explicit_courier_helper']=False
-    result['courier_delivery_event']='OnNLDeliverNote'
+    result['npc_courier_integration']=False
     result['book_text_hook_show_event_only']=True
-    result['npc_courier_optional']=True
+    result['legacy_queued_npc_recovery']=True
     result['polymorphic_courier_reference_resolution']=True
     result['session_only_repeat_debug']=True
-    result['debug_commands']=['NLDebug','NLSpawnNote','NLRepeatNotes','NLDeliverNote']
+    result['debug_commands']=['NLDebug','NLSpawnNote','NLRepeatNotes','NLDeliverPlayerNote']
     result['safe_extra_data_allocation_bytes']=32
     result['development_build']=True
     (ROOT/'validation-results.json').write_text(json.dumps(result,indent=2)+'\n',encoding='utf-8')
@@ -74,10 +75,6 @@ def main():
     release=ROOT/'releases';release.mkdir(exist_ok=True)
     install=release/f'Notes-and-Letters-v{VERSION}-dev.zip'
     source=release/f'Notes-and-Letters-v{VERSION}-source.zip'
-    event_zip=release/f'Notes-and-Letters-Courier-Event-v{VERSION}.zip'
-    event_files=('NotesAndLetters-CourierEvent.esp','Scripts/NL_NPCNoteDelivery.pex')
-    with zipfile.ZipFile(event_zip,'w',zipfile.ZIP_DEFLATED) as z:
-        for name in event_files:z.write(ROOT/'build/optional'/name,name)
     docs=('README.md','VALIDATION.md','validation-results.json','COPYING.txt','EXCEPTIONS.md','Notes-and-Letters-Proofreading.md')
     config=package/'SKSE/Plugins/NotesAndLetters.ini'
     shutil.copyfile(ROOT/'config/NotesAndLetters.ini',config)
@@ -87,12 +84,11 @@ def main():
     prefix=f'Notes-and-Letters-v{VERSION}/'
     with zipfile.ZipFile(source,'w',zipfile.ZIP_DEFLATED) as z:
         for name in docs+('CMakeLists.txt','vcpkg.json','.gitignore'):z.write(ROOT/name,prefix+name)
-        for directory in ('src','tests','content','scripts','config','papyrus','tools/event-headers','cmake','third-party','vendor/CommonLibSSE-NG'):
+        for directory in ('src','tests','content','scripts','config','cmake','third-party','vendor/CommonLibSSE-NG'):
             for p in (ROOT/directory).rglob('*'):
                 if p.is_file() and not any(k in p.parts for k in ('.git','__pycache__')):
                     z.write(p,prefix+p.relative_to(ROOT).as_posix())
-        z.write(ROOT/'tools/EventFlags.flg',prefix+'tools/EventFlags.flg')
-        for name in ('binary-validation.json','courier-event-validation.json'):z.write(ROOT/'research'/name,prefix+'research/'+name)
+        for name in ('binary-validation.json',):z.write(ROOT/'research'/name,prefix+'research/'+name)
         for p in (dep/'tools/vcpkg-downloads').iterdir():
             if p.is_file() and (p.name.endswith('.tar.gz') or p.suffix=='.patch'):z.write(p,prefix+'dependency-sources/'+p.name)
         for name in ('spdlog','fmt','directxmath','directxtk','rapidcsv','vcpkg-cmake','vcpkg-cmake-config'):
@@ -100,21 +96,18 @@ def main():
             for p in port.rglob('*'):
                 if p.is_file():z.write(p,prefix+f'dependency-sources/ports/{name}/'+p.relative_to(port).as_posix())
         for local,name in [('scripts/cmake/vcpkg_configure_cmake.cmake','vcpkg_configure_cmake.cmake'),('LICENSE.txt','vcpkg-LICENSE.txt')]:z.write(dep/'tools/vcpkg'/local,prefix+'dependency-sources/'+name)
-    for path in (install,source,event_zip):
+    for path in (install,source):
         with zipfile.ZipFile(path) as z:
             assert z.testzip() is None
             assert len(z.namelist())==len(set(z.namelist()))
             assert not any('/research/dependency/' in n or n.endswith(('.bsa','.esm')) for n in z.namelist())
+            assert not any('NL_NPCNoteDelivery' in n or 'CourierEvent' in n or 'build_courier_event' in n for n in z.namelist())
     with zipfile.ZipFile(install) as z:
         assert set(z.namelist())=={'NotesAndLetters.esp','SKSE/Plugins/NotesAndLetters.dll','SKSE/Plugins/NotesAndLetters.ini'}
         for name in ('NotesAndLetters.esp','SKSE/Plugins/NotesAndLetters.dll','SKSE/Plugins/NotesAndLetters.ini'):assert z.read(name)==(package/name).read_bytes()
-    with zipfile.ZipFile(event_zip) as z:
-        assert set(z.namelist())==set(event_files)
-        for name in event_files:assert z.read(name)==(ROOT/'build/optional'/name).read_bytes()
     from package_licenses import package as attach_licenses
     attach_licenses(install,source)
-    attach_licenses(event_zip,source)
-    report={p.name:dict(bytes=p.stat().st_size,sha256=digest(p)) for p in (install,source,event_zip)}
+    report={p.name:dict(bytes=p.stat().st_size,sha256=digest(p)) for p in (install,source)}
     (release/'SHA256.json').write_text(json.dumps(report,indent=2)+'\n',encoding='utf-8')
     print(json.dumps(dict(validation=result,archives=report),indent=2))
 

@@ -1,10 +1,12 @@
 # Notes and Letters
 
-Skyrim SE/AE mod — source version **1.0.1-dev**.
+Skyrim SE/AE mod — source version **1.1.0-dev**.
 
-## Version 1.0.1
+## Version 1.1.0 — NPC courier integration removed
 
-Regular NPC pocket-note chances return to 1/2/3% according to occupation. Bandits/Forsworn and mapped generic repeat-combat NPCs (including Imperial/Stormcloak soldiers) retain half rates, 0.5/1/1.5%. Unique named members of the latter combat factions are not reduced. Player letters and all other 1.0.0 rates stay unchanged. Existing notes, saved timers and schema remain intact. In-game testing remains outstanding.
+NPC notes always go directly to their recipients. Existing queued NPC copies are recovered without generating replacements. Player courier letters remain separate. Disable/remove the obsolete NotesAndLetters-CourierEvent.esp and NL_NPCNoteDelivery.pex addon; it is no longer needed or distributed. Save schema 2 and original note identities remain compatible.
+
+For a player courier test, run `NLDebug` then `NLDeliverPlayerNote` (`NLDeliverNote` is an alias), and close the console. This creates one random player letter without relationship/chance/timer requirements and attempts vanilla dispatch. Existing active player deliveries are not reset. See the detailed instructions and runtime limits below.
 
 ## Complete source
 
@@ -32,7 +34,7 @@ This program is distributed WITHOUT ANY WARRANTY, including the implied warranti
 
 ---
 
-# Notes and Letters — 1.0.1 development build
+# Notes and Letters — 1.1.0 development build
 
 An SKSE mod adding small pieces of correspondence to Skyrim. This is an initial development build. Compilation and automated tests have passed; the courier scenes, book rendering, and gameplay triggers still require in-game acceptance testing.
 
@@ -40,8 +42,6 @@ An SKSE mod adding small pieces of correspondence to Skyrim. This is an initial 
 
 - Skyrim Special Edition or Anniversary Edition, with matching SKSE64 and Address Library for SKSE Plugins.
 - Install this archive through your mod manager and enable `NotesAndLetters.esp`. It is ESL-flagged and uses compact local IDs. Keep its filename unchanged.
-- Optional and recommended: Courier Delivers to NPCs by Pickysaurus, version 1.0.4 (`WICourierRadiant.esp`), for visible deliveries to supported NPCs: https://www.nexusmods.com/skyrimspecialedition/mods/42928
-- Without that optional integration, NPC letters use direct inventory placement. Player letters use Skyrim's vanilla courier.
 - Dragonborn supports the Severin Manor letters. Shadowfoot Sanctum must be installed for its house letters; its absence does not block other features.
 - No SPID, MCM, or additional dynamic-form framework is used. The DLL supports SE 1.5.97 and the AE runtime versions listed in its runtime guard, including the installed 1.7.104 runtime. Other storefronts/runtimes need separate validation.
 
@@ -65,7 +65,9 @@ One allowed category is chosen, then a single chance roll is made. Regular NPCs 
 
 At refresh, a note still in that NPC's inventory has a 50% chance of being removed. A retained note prevents another roll. If there is no note afterward, the NPC can receive one new chance roll. Taken notes remain intact. Inventory resets do not bypass the saved refresh timer.
 
-Supported recipients receive queued notes through the optional `NotesAndLetters-CourierEvent.esp` and `NL_NPCNoteDelivery.pex`, which attach an event handler to Courier Delivers to NPCs 1.0.4. Enable the patch after its dependency. The event routes the exact queued copy and reports success/failure; pending copies survive failed attempts. Without the optional event handler, notes use direct inventory placement. Existing courier scripts are not replaced, and active external delivery scenes are not redirected. Daytime, recipient availability and vanilla player deliveries still constrain actual arrival.
+Every successful NPC roll places its note directly in that NPC's inventory. No NPC courier integration, external delivery addon, mod event, or NPC courier script is used. Player letters still use Skyrim's vanilla courier.
+
+On updating, existing NPC pocket notes still owned by the courier are moved as tracked physical copies to their intended recipients. Recovery recognizes copies already in recipient inventories and never creates replacements. Missing/deleted recipients or unavailable physical copies are left pending for recovery rather than duplicated. Delivered recovered copies receive a normal 3–5-day refresh deadline; ordinary existing NPC timers are unchanged. Player courier letters and bundle notes are excluded from recovery.
 
 ## Occupation modifiers
 
@@ -112,20 +114,25 @@ Run `scripts/build_content.py` with Python, then `scripts/build.ps1` with the co
 See `VALIDATION.md` for remaining in-game checks. Logs are written to the Skyrim SKSE log folder as `NotesAndLetters.log`.
 
 
-## Version 1.0.0
+## Version 1.1.0 — direct NPC notes
 
-Normal note-generation chances are halved across NPC pocket notes, player relationship letters, investments, house welcomes and courier bundles. Fractional percentages remain exact; timers, category balance, signatures, existing notes, queued deliveries and saved house decisions are preserved. Note cleanup retains its existing 50% removal chance.
+NPC courier integration is retired. Disable/remove the obsolete `NotesAndLetters-CourierEvent.esp` and `Scripts/NL_NPCNoteDelivery.pex` from the old addon. Courier Delivers to NPCs is not required; it can remain installed independently if you want its own unrelated behavior. This release does not edit or stop that mod. Old addon presence cannot route new notes through it, because the native integration and callbacks are gone.
 
-The documentation now describes the current event-only courier adapter rather than superseded scene/alias/AI implementations. Two inactive compatibility records and save-migration fields are intentionally retained so old saves do not lose their referenced forms. No companion mod is changed.
+Save schema 2 and stable note identities are retained. Inactive old helper records and serialized migration fields remain solely for existing saves. Keep your matching ESS/SKSE co-save. Do not use resetinventory or delete the co-save to update.
 
-## Debug commands
+## Player courier test
 
-`NLDebug` enables session debug output. `NLSpawnNote` forces a valid targeted NPC note, `NLRepeatNotes` repeatedly exercises NPC distribution, and `NLDeliverNote` tests the optional event route. Debug forcing bypasses normal generation chances. Child/dead/creature exclusions and duplicate protection remain. Debug repeat state resets on load/restart.
+Load a save, open the console and run:
+
+```text
+NLDebug
+NLDeliverPlayerNote
+```
+
+`NLDeliverNote` is an alias for the new player-delivery command. No crosshair NPC is needed. Each invocation creates one random player letter from the existing 64 texts, waiving relationship, marriage, investment, home, chance and waiting requirements for that one letter only. It places the letter in the vanilla courier container, sends the normal notification, and tries starting the vanilla player courier quest. If newly started, the test brings the courier to the player and evaluates their normal AI. Already-running player deliveries are not stopped, reset or teleported. Close the console so the game can run; if starting the quest is refused, the console reports pending dispatch and normal location/settlement conditions still apply. Debug mode and repeat flags are session-only. Run NLDebug again to disable debug after testing. The physical test letter is an ordinary saved item.
+
+`NLSpawnNote` forces one valid targeted NPC note directly into inventory. `NLRepeatNotes` repeats only direct NPC note distribution. Neither command routes through NPC couriers.
 
 ## Validation limits
 
-Build, automated core tests and package validation are separate from Skyrim runtime acceptance. Courier arrival, reading personalized notes, update/save behavior and rare-event frequencies still require in-game testing. See VALIDATION.md. Keep the matching SKSE co-save; uninstalling this mod from an existing save is not supported.
-
-## Version 1.0.1
-
-Restored the earlier NPC pocket-note rates for regular residents while retaining rarer rolls on the repeat combat populations listed above. Player letters, investments, house welcomes, courier bundles, refresh intervals and cleanup probabilities remain at 1.0.0 settings. The classification affects new normal rolls only; existing notes, pending deliveries, timers and saved decisions are preserved. No save reset or new schema is needed.
+Build, core migration/persistence checks and archive validation are separate from Skyrim runtime acceptance. Existing-queue recovery, removed-addon updates and actual player-courier arrival/dialogue still need in-game testing. Normal player-letter generation and vanilla notification code are preserved. No in-game success is claimed.
