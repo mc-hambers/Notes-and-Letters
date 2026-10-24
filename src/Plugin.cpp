@@ -119,6 +119,12 @@ public:
         std::set<RE::BGSLocation*> seen;RE::BGSLocation* result=nullptr;
         while (loc && seen.size()<64 && seen.insert(loc).second) {if (habitation && loc->HasKeyword(habitation)) result=loc;loc=loc->parentLoc;}return result;
     }
+    bool rarerPocketNPC(RE::Actor* a) const {
+        // Skyrim.esm faction EDIDs verified from the installed master. Do not use crime/government factions.
+        constexpr std::array<unsigned,10> combatFactions{0x2BF9A,0x2BF9B,0x1C9FC,0x1C9FD,0x26724,0x34B74,0x27242,0x2EB13,0xAA0A4,0x39F26};
+        const bool combat=std::any_of(combatFactions.begin(),combatFactions.end(),[&](unsigned id) {return faction(a,id);});
+        return rarePocketPopulation(role(a)==Bandit,a->GetActorBase()->IsUnique(),combat);
+    }
     bool courierEligible(RE::Actor* a) const {return useCourier(config.useNPCCourier,npcQuest!=nullptr,eventBridgeReady,eligible(a) && a->GetActorBase()->IsUnique() && settlement(a->GetCurrentLocation()) && role(a)!=Bandit);}
     bool visibleRecipient(RE::Actor* actor) const {
         auto* player=RE::PlayerCharacter::GetSingleton();if (!actor || !player || !actor->Is3DLoaded()) return false;
@@ -201,7 +207,7 @@ public:
                 if (!owner || !find(owner,it->second)) s.pocket=0;
                 else if (owner==a && (repeatNotes || data.random.chance(50))) {if (transfer(s.pocket,owner,nullptr)) s.pocket=0;}
             }
-            if (!s.pocket) if (auto category=repeatNotes ? std::optional<unsigned>(forcedNPCCategory(data.random,role(a))) : rollNPC(data.random,role(a))) {
+            if (!s.pocket) if (auto category=repeatNotes ? std::optional<unsigned>(forcedNPCCategory(data.random,role(a))) : rollNPC(data.random,role(a),rarerPocketNPC(a))) {
                 logger::debug("NPC roll succeeded {:08X}: category={}, courier={}",id,*category,routeCourier(a));
                 // A supported recipient waits for a real courier handoff; unsupported recipients get it directly.
                 auto* owner=routeCourier(a) ? courier : static_cast<RE::TESObjectREFR*>(a);
@@ -460,7 +466,7 @@ void message(SKSE::MessagingInterface::Message* e) {
 }
 SKSEPluginLoad(const SKSE::LoadInterface* skse) {
     SKSE::Init(skse);if (auto path=SKSE::log::log_directory()) {auto sink=std::make_shared<spdlog::sinks::basic_file_sink_mt>((*path/"NotesAndLetters.log").string(),true);spdlog::set_default_logger(std::make_shared<spdlog::logger>("NotesAndLetters",std::move(sink)));spdlog::set_level(spdlog::level::info);spdlog::flush_on(spdlog::level::info);}
-    logger::info("Notes and Letters 1.0.0 development build; runtime {}",REL::Module::get().version().string());
+    logger::info("Notes and Letters 1.0.1 development build; runtime {}",REL::Module::get().version().string());
     const auto version=REL::Module::get().version();const std::set<unsigned> ae{317,318,323,342,353,629,640,659,1130,1170,1179};
     if (!(version.major()==1 && ((version.minor()==5 && version.patch()==97) || (version.minor()==6 && ae.contains(version.patch())) || (version.minor()==7 && (version.patch()==99 || version.patch()==104))))) {logger::error("Unsupported runtime");return false;}
     auto* api=SKSE::GetSerializationInterface();if (!api || !SKSE::GetTaskInterface()) return false;

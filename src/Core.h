@@ -40,11 +40,14 @@ inline int categoryWeight(Role role,unsigned category) {
     return 2;
 }
 // One category is selected first, then exactly one chance roll. Never eight independent rolls.
-inline std::optional<unsigned> rollNPC(Random& random,Role role) {
+inline bool rarePocketPopulation(bool bandit,bool unique,bool combatFaction) {return bandit || (!unique && combatFaction);}
+inline std::optional<unsigned> rollNPC(Random& random,Role role,bool repetitiveCombat=false) {
     std::array<unsigned,8> allowed{};unsigned count=0;
     for (unsigned c=0;c<8;++c) if (categoryWeight(role,c)) allowed[count++]=c;
     const auto category=allowed[random.next()%count];
-    return random.letterChance(categoryWeight(role,category)) ? std::optional<unsigned>(category) : std::nullopt;
+    const unsigned weight=categoryWeight(role,category);
+    const bool rarer=role==Bandit || repetitiveCombat;
+    return random.next()%200<weight*(rarer ? 1u : 2u) ? std::optional<unsigned>(category) : std::nullopt;
 }
 // Forced debug success retains the category distribution conditional on a normal successful roll.
 inline unsigned forcedNPCCategory(Random& random,Role role) {

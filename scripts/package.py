@@ -12,7 +12,7 @@ from verify_binary import main as binary
 from build_courier_event import main as courier_event
 
 ROOT=Path(__file__).resolve().parents[1]
-VERSION='1.0.0'
+VERSION='1.0.1'
 
 def validate_esp(path):
     raw=path.read_bytes();tag,size,flags=struct.unpack_from('<4sII',raw);assert tag==b'TES4' and flags&0x200

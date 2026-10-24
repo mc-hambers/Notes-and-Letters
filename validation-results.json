@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
+  "version": "1.0.1",
   "plugin_name": "Notes and Letters",
   "dll_architecture": "x64",
   "windows_loader": "passed",
@@ -15,7 +15,7 @@
     "original_plugin_sha256": "c11e2250076a86ddff831d808782874a8c1aac8904fccc1af512ac3320c20363",
     "gameplay_tested": false
   },
-  "core_behavior_checks": 51446,
+  "core_behavior_checks": 66807,
   "esl_flag": true,
   "compact_book_records": 896,
   "unique_note_texts": 224,
@@ -23,7 +23,7 @@
   "old_delivery_implementation_removed": true,
   "retired_records_inert": true,
   "structural_record_validation": "passed",
-  "dll_sha256": "a76458e58557fdced703ceacb49c0f73bc4279d3d300bc87a5dfd14880d111ce",
+  "dll_sha256": "273339bd9050292620fc83ff44a48a7c1f416d061553d884453ac8fcdab00b21",
   "esp_sha256": "de39bfb6e89105e6fa0d315794ee23fdb49d1878449cb26b3f03f40aa271d937",
   "save_schema": 2,
   "paper_note_inventory_art": [

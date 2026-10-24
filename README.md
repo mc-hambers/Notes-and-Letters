@@ -1,12 +1,10 @@
 # Notes and Letters
 
-Skyrim SE/AE mod — source version **1.0.0-dev**.
+Skyrim SE/AE mod — source version **1.0.1-dev**.
 
-## Version 1.0.0
+## Version 1.0.1
 
-Normal generation is half as likely: NPC chances are now 0.5–1.5%, spouse letters 2.5%, jealousy/hate 0.5%, friendship 1%, and investment letters 10%. Courier bundles have a 50% chance per existing refresh; new house decisions are 42.5% one letter, 5% two, and 52.5% none. Existing notes, timers, category balance and save schema are preserved.
-
-Removed superseded courier instructions and corrected current integration references. Inactive compatibility records remain for older saves. Build, core checks, binary/package validation pass; in-game acceptance remains untested.
+Regular NPC pocket-note chances return to 1/2/3% according to occupation. Bandits/Forsworn and mapped generic repeat-combat NPCs (including Imperial/Stormcloak soldiers) retain half rates, 0.5/1/1.5%. Unique named members of the latter combat factions are not reduced. Player letters and all other 1.0.0 rates stay unchanged. Existing notes, saved timers and schema remain intact. In-game testing remains outstanding.
 
 ## Complete source
 
@@ -34,7 +32,7 @@ This program is distributed WITHOUT ANY WARRANTY, including the implied warranti
 
 ---
 
-# Notes and Letters — 1.0.0 development build
+# Notes and Letters — 1.0.1 development build
 
 An SKSE mod adding small pieces of correspondence to Skyrim. This is an initial development build. Compilation and automated tests have passed; the courier scenes, book rendering, and gameplay triggers still require in-game acceptance testing.
 
@@ -63,7 +61,7 @@ Living adult NPCs of the ten playable races, their vampire variants, and the eld
 
 Eligible actor references are discovered without loading their cells. Loaded NPCs and small batches of off-cell references receive an initial roll. Their next refresh is selected once, 3–5 game days later, and checked during loaded or off-cell processing. Loading repeatedly, opening inventory, and reloading a save do not restart a saved timer or grant extra rolls. Missed intervals do not accumulate.
 
-One allowed category is chosen, then a single chance roll is made. The baseline is 1%; occupation modifiers use 0.5% or 1.5%. These are not eight independent rolls. Thus actual overall odds vary modestly by occupation. At most one pocket note from this system is outstanding per NPC.
+One allowed category is chosen, then a single chance roll is made. Regular NPCs use the earlier 2% baseline, with 1% or 3% occupation modifiers. Repeat combat populations retain half those odds (0.5%, 1%, or 1.5%). These are not eight independent rolls. Thus actual overall odds vary modestly by occupation. At most one pocket note from this system is outstanding per NPC.
 
 At refresh, a note still in that NPC's inventory has a 50% chance of being removed. A retained note prevents another roll. If there is no note afterward, the NPC can receive one new chance roll. Taken notes remain intact. Inventory resets do not bypass the saved refresh timer.
 
@@ -73,14 +71,16 @@ Supported recipients receive queued notes through the optional `NotesAndLetters-
 
 Roles are assigned from vanilla factions, with conflicts resolved in this order: bandit, guard, beggar, noble, bard, innkeeper, smith, merchant, farmer, hunter, healer/priest, worker, scholar, ordinary. Unmatched NPCs use ordinary odds. Custom faction/class mappings are not yet configurable.
 
-- Romance: beggars and bandits 0.5%; nobles and bards 1.5%; other eligible roles 1%.
-- Condolences: beggars and bandits 0.5%; ordinary townspeople, guards, and farmers 1.5%; others 1%.
-- Congratulations: beggars, bandits, and guards 0.5%; nobles and bards 1.5%; others 1%.
-- Gratitude: beggars and bandits 0.5%; innkeepers, healers, and merchants 1.5%; others 1%.
-- Encouragement: beggars and bandits 0.5%; healers, guards, and workers 1.5%; others 1%.
-- Business: merchants, smiths, and innkeepers 1.5%; farmers and workers 1%; other roles excluded.
-- Welcome: innkeepers and farmers 1.5%; other settled roles 1%; bandits and hunters excluded.
-- Personal notes/lists: merchants, scholars, hunters, and workers 1.5%; others 1%.
+- Romance: beggars and bandits 1%; nobles and bards 3%; other eligible roles 2%.
+- Condolences: beggars and bandits 1%; ordinary townspeople, guards, and farmers 3%; others 2%.
+- Congratulations: beggars, bandits, and guards 1%; nobles and bards 3%; others 2%.
+- Gratitude: beggars and bandits 1%; innkeepers, healers, and merchants 3%; others 2%.
+- Encouragement: beggars and bandits 1%; healers, guards, and workers 3%; others 2%.
+- Business: merchants, smiths, and innkeepers 3%; farmers and workers 2%; other roles excluded.
+- Welcome: innkeepers and farmers 3%; other settled roles 2%; bandits and hunters excluded.
+- Personal notes/lists: merchants, scholars, hunters, and workers 3%; others 2%.
+
+These occupation figures are the full regular-NPC rates. Bandit/Forsworn-role actors retain half rates. Non-unique Imperial/Stormcloak soldiers, warlocks, necromancers, vampires/thralls, Silver Hand and Thalmor members also receive half rates. Named unique members of those latter groups keep full rates; guards without a mapped combat faction retain full rates; generic guards who also belong to the mapped Imperial/Stormcloak combat factions receive the rarer rate. Classification uses verified vanilla combat factions, not government or crime factions, and does not require current hostility to the player. Custom enemies without these factions use regular rates.
 
 ## Player letters and initial timing defaults
 
@@ -125,3 +125,7 @@ The documentation now describes the current event-only courier adapter rather th
 ## Validation limits
 
 Build, automated core tests and package validation are separate from Skyrim runtime acceptance. Courier arrival, reading personalized notes, update/save behavior and rare-event frequencies still require in-game testing. See VALIDATION.md. Keep the matching SKSE co-save; uninstalling this mod from an existing save is not supported.
+
+## Version 1.0.1
+
+Restored the earlier NPC pocket-note rates for regular residents while retaining rarer rolls on the repeat combat populations listed above. Player letters, investments, house welcomes, courier bundles, refresh intervals and cleanup probabilities remain at 1.0.0 settings. The classification affects new normal rolls only; existing notes, pending deliveries, timers and saved decisions are preserved. No save reset or new schema is needed.

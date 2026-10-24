@@ -67,8 +67,12 @@ int main() {
     for (unsigned role=0;role<=Settler;++role) {
         Random r{100+role};unsigned successes=0;
         for (unsigned i=0;i<100000;++i) if (auto c=rollNPC(r,Role(role))) {++successes;require(categoryWeight(Role(role),*c)>0);}
-        require(successes>400 && successes<1750);
+        require(role==Bandit ? successes>400 && successes<1750 : successes>800 && successes<3500);
     }
+    require(rarePocketPopulation(true,true,false));require(rarePocketPopulation(false,false,true));require(!rarePocketPopulation(false,true,true));require(!rarePocketPopulation(false,false,false));
+    {Random regular{739},soldier{739};unsigned normalCount=0,rareCount=0;
+    for(unsigned i=0;i<200000;++i) {normalCount+=rollNPC(regular,Ordinary).has_value();rareCount+=rollNPC(soldier,Ordinary,true).has_value();}
+    require(normalCount>3500 && normalCount<5500);require(rareCount>1700 && rareCount<2800);require(normalCount>rareCount*1.8 && normalCount<rareCount*2.2);}
     for (const auto& t:catalog) {if (t.category==7) require(t.signature.empty());if (t.category==12) require(t.body.starts_with("{player_name},\n\n"));}
     Instance n;n.text=210;n.model=3;n.uid=12;n.owner=0x100;n.sender=0x100;n.purpose=Purpose::HateDraft;n.due=4.7;n.body="Name,\n\nI dislike you.";n.signature="A.";
     d.serials[n.text]=12;d.notes[key(n)]=n;d.actors[0x100]=a;d.actors[0x100].pocket=key(n);d.courierKey=key(n);d.courierTarget=0x100;d.sceneSeen=true;d.houseSenders[0]=0x100;d.homesInitialized=true;
