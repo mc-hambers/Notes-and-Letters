@@ -1,4 +1,4 @@
-# Validation — Notes and Letters 1.1.0
+# Validation — Notes and Letters 1.0.0
 
 Automated checks cover stable save schema 2, old pending-pocket recipient recovery, one-copy/idempotent migration, preserving text/signature/model/IDs, excluding player letters/bundles/hate drafts, regular-vs-repeat-combat chances, old-save decoding, timers, gifts of existing notes, duplicate prevention, native allocation and book identity. Binary/package checks validate x64 exports/version, all 896 BOOK records, stable IDs, inert helper records, exact package payloads and archive integrity.
 

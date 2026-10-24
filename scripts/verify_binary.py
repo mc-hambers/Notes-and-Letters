@@ -12,10 +12,10 @@ def main():
     dll=ctypes.WinDLL(str(path.resolve()))
     for symbol in ('SKSEPlugin_Load','SKSEPlugin_Query'):getattr(dll,symbol)
     version=(ctypes.c_uint32*2).in_dll(dll,'SKSEPlugin_Version')
-    assert version[1]==0x01010000
+    assert version[1]==0x01000000
     name=ctypes.string_at(ctypes.addressof(version)+8,256).split(b'\0',1)[0].decode()
     assert name=='Notes and Letters'
-    report=dict(version='1.1.0',plugin_name=name,dll_architecture='x64',windows_loader='passed',skse_exports='passed',gameplay_tested=False)
+    report=dict(version='1.0.0',plugin_name=name,dll_architecture='x64',windows_loader='passed',skse_exports='passed',gameplay_tested=False)
     (ROOT/'research/binary-validation.json').write_text(json.dumps(report,indent=2)+'\n',encoding='utf-8')
     return report
 

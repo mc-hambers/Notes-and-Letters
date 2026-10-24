@@ -11,7 +11,7 @@ from build_content import main as content
 from verify_binary import main as binary
 
 ROOT=Path(__file__).resolve().parents[1]
-VERSION='1.1.0'
+VERSION='1.0.0'
 
 def validate_esp(path):
     raw=path.read_bytes();tag,size,flags=struct.unpack_from('<4sII',raw);assert tag==b'TES4' and flags&0x200
@@ -75,7 +75,7 @@ def main():
     release=ROOT/'releases';release.mkdir(exist_ok=True)
     install=release/f'Notes-and-Letters-v{VERSION}-dev.zip'
     source=release/f'Notes-and-Letters-v{VERSION}-source.zip'
-    docs=('README.md','VALIDATION.md','validation-results.json','COPYING.txt','EXCEPTIONS.md','Notes-and-Letters-Proofreading.md')
+    docs=('README.md','AGENTS.md','VALIDATION.md','validation-results.json','COPYING.txt','EXCEPTIONS.md','Notes-and-Letters-Proofreading.md')
     config=package/'SKSE/Plugins/NotesAndLetters.ini'
     shutil.copyfile(ROOT/'config/NotesAndLetters.ini',config)
     with zipfile.ZipFile(install,'w',zipfile.ZIP_DEFLATED) as z:

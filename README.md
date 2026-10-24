@@ -1,8 +1,10 @@
 # Notes and Letters
 
-Skyrim SE/AE mod — source version **1.1.0-dev**.
+Version numbering is fixed at **1.0.0** until explicitly changed by the owner. Current functionality is retained.
 
-## Version 1.1.0 — NPC courier integration removed
+Skyrim SE/AE mod — source version **1.0.0-dev**.
+
+## Version 1.0.0 — NPC courier integration removed
 
 NPC notes always go directly to their recipients. Existing queued NPC copies are recovered without generating replacements. Player courier letters remain separate. Disable/remove the obsolete NotesAndLetters-CourierEvent.esp and NL_NPCNoteDelivery.pex addon; it is no longer needed or distributed. Save schema 2 and original note identities remain compatible.
 
@@ -34,7 +36,7 @@ This program is distributed WITHOUT ANY WARRANTY, including the implied warranti
 
 ---
 
-# Notes and Letters — 1.1.0 development build
+# Notes and Letters — 1.0.0 development build
 
 An SKSE mod adding small pieces of correspondence to Skyrim. This is an initial development build. Compilation and automated tests have passed; the courier scenes, book rendering, and gameplay triggers still require in-game acceptance testing.
 
@@ -114,7 +116,7 @@ Run `scripts/build_content.py` with Python, then `scripts/build.ps1` with the co
 See `VALIDATION.md` for remaining in-game checks. Logs are written to the Skyrim SKSE log folder as `NotesAndLetters.log`.
 
 
-## Version 1.1.0 — direct NPC notes
+## Version 1.0.0 — direct NPC notes
 
 NPC courier integration is retired. Disable/remove the obsolete `NotesAndLetters-CourierEvent.esp` and `Scripts/NL_NPCNoteDelivery.pex` from the old addon. Courier Delivers to NPCs is not required; it can remain installed independently if you want its own unrelated behavior. This release does not edit or stop that mod. Old addon presence cannot route new notes through it, because the native integration and callbacks are gone.
 
