@@ -1,14 +1,7 @@
-# Validation — Notes and Letters 1.0.0
+# Notes and Letters 1.0.1 validation
 
-Automated checks cover stable save schema 2, old pending-pocket recipient recovery, one-copy/idempotent migration, preserving text/signature/model/IDs, excluding player letters/bundles/hate drafts, regular-vs-repeat-combat chances, old-save decoding, timers, gifts of existing notes, duplicate prevention, native allocation and book identity. Binary/package checks validate x64 exports/version, all 896 BOOK records, stable IDs, inert helper records, exact package payloads and archive integrity.
+Native Release build and NoteBehavior suite: passed. Tests cover save serialization, legacy note recovery and deduplicated actor queue ordering, reset and repeat admission.
 
-## Required Skyrim acceptance (unrun)
+Save schema remains 2. ESP/catalog hashes are compared against the prior 1.0.0 release at packaging time. Plugin metadata is 1.0.1.
 
-1. Load a matching ESS/SKSE save with queued NPC notes, both with the old addon absent and left installed. Confirm each original note moves once to the correct NPC; reloading/repeated scans must not create another copy or change collected text/signatures/models.
-2. Check unloaded, dead and disabled recipients, already-delivered copies, stolen/missing queued copies and deleted/unresolvable recipients. Never regenerate a missing physical copy.
-3. Generate ordinary NPC notes and use NLSpawnNote/NLRepeatNotes. Confirm direct inventories without external event requests or NPC-courier movement.
-4. Remove the obsolete event ESP/PEX, retaining NotesAndLetters.esp and the matched co-save. Confirm update compatibility and original player-letter behavior.
-5. Run NLDebug then NLDeliverPlayerNote (or NLDeliverNote), without any qualifying relationship/investment/home. Confirm one test player letter, native courier arrival and dialogue, no crosshair requirement and no lasting bypass. Repeat during an existing player delivery; do not reset or teleport that active courier.
-6. Test failed quest startup, indoors/outdoors, travel, paused console, player combat, normal later spouse/friend/hate/investment/home letters and reading/transfer/save persistence.
-
-All live inventory, VM, alias, courier pathing and dialogue assertions require Skyrim. Pure tests and compilation cannot prove them.
+The global form-table traversal and sort have been removed from runtime work. Queued work is capped at four loaded actors per job with a two-ms admission budget; discovery visits one registered cell per slice. One engine call can exceed the budget, so slices at least five ms are logged. A full game restart and a comparable Hitch Hunter run are required to verify improvement. Gameplay validation is pending.

@@ -1,4 +1,5 @@
 #include "Core.h"
+#include "ActorWorkQueue.h"
 #include "Catalog.h"
 #include "DebugConfig.h"
 #include "RuntimeExtraData.h"
@@ -16,6 +17,8 @@ struct MockHandler {
     template<class T>T* LookupForm(unsigned id,const char* name) {auto* form=LookupForm(id,name);return form && form->type==T::FORMTYPE ? form->template As<T>() : nullptr;}
 };
 int main() {
+    {ActorWorkQueue q;q.add(0);require(q.empty());for (unsigned i=1;i<=100;++i) {q.add(i);q.add(i);}for (unsigned i=1;i<=100;++i) require(q.pop()==i);require(q.empty());require(q.pop()==0);q.add(3);q.clear();require(q.empty());q.add(3);require(q.pop()==3);}
+
     {
         Data old;Instance pending;pending.text=8;pending.uid=1;pending.model=2;pending.owner=0x39FB7;pending.sender=0x100;pending.purpose=Purpose::Pocket;pending.body="Existing exact text";pending.signature="A.";
         const auto id=key(pending);old.notes[id]=pending;old.serials[8]=1;old.actors[0x100].pocket=id;old.actors[0x100].refresh=12;

@@ -11,7 +11,7 @@ from build_content import main as content
 from verify_binary import main as binary
 
 ROOT=Path(__file__).resolve().parents[1]
-VERSION='1.0.0'
+VERSION='1.0.1'
 
 def validate_esp(path):
     raw=path.read_bytes();tag,size,flags=struct.unpack_from('<4sII',raw);assert tag==b'TES4' and flags&0x200
@@ -55,6 +55,14 @@ def main():
     result['dll_sha256']=digest(package/'SKSE/Plugins/NotesAndLetters.dll')
     result['esp_sha256']=digest(package/'NotesAndLetters.esp')
     result['save_schema']=2
+    previous=ROOT/'releases/Notes-and-Letters-v1.0.0-a.zip'
+    with zipfile.ZipFile(previous) as old:
+        assert old.read('NotesAndLetters.esp')==(package/'NotesAndLetters.esp').read_bytes(), 'Existing ESP records changed'
+    result['esp_byte_identical_to_1_0_0']=True
+    assert 'GetAllForms' not in native and 'std::sort(remoteActors' not in native
+    result['global_form_scan_removed']=True
+    result['runtime_work_queue']='deduplicated IDs; up to 4 loaded visits/job; 2 ms admission budget'
+    result['gameplay_performance_verified']=False
     result['paper_note_inventory_art']=['Skyrim.esm|097788','Skyrim.esm|01541B','Skyrim.esm|01541C','Skyrim.esm|015421']
     result['off_cell_npc_distribution']=True
     result['explicit_courier_helper']=False

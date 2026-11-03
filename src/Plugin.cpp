@@ -1,4 +1,5 @@
 #include "Core.h"
+#include "ActorWorkQueue.h"
 #include "Catalog.h"
 #include "DebugConfig.h"
 #include "RuntimeExtraData.h"
@@ -30,7 +31,12 @@ public:
     Config config;RE::ObjectRefHandle debugTarget;bool repeatNotes=false;
     Data data;std::atomic_bool active{false};std::atomic_uint64_t session{0};bool valid=true;
     std::array<RE::TESObjectBOOK*,textCount*modelCount> books{};
-    std::vector<unsigned> remoteActors;std::size_t remoteCursor=0;std::chrono::steady_clock::time_point discoveredAt{};
+    std::vector<unsigned> remoteActors, discoveryCells;std::set<unsigned> knownActors;
+    std::size_t remoteCursor=0,cellCursor=0;ActorWorkQueue actorWork;std::set<unsigned> highActors;
+    std::map<unsigned,std::chrono::steady_clock::time_point> relationshipChecks;
+    std::chrono::steady_clock::time_point nextMaintenance{},nextRemote{},nextDiscovery{};
+    void rememberActor(unsigned id) {if (id && knownActors.size()<100000 && knownActors.insert(id).second) remoteActors.push_back(id);}
+    void resetWork() {remoteActors.clear();knownActors.clear();highActors.clear();actorWork.clear();relationshipChecks.clear();remoteCursor=0;cellCursor=0;nextMaintenance={};nextRemote={};nextDiscovery={};}
     RE::TESQuest *playerQuest=nullptr,*marriage=nullptr;
     RE::TESObjectREFR *courier=nullptr,*container=nullptr;RE::TESGlobal* itemCount=nullptr;
     RE::BGSKeyword* habitation=nullptr;
@@ -39,6 +45,7 @@ public:
         std::ifstream ini(std::filesystem::path(REL::Module::get().filePath().data()).parent_path()/"Data/SKSE/Plugins/NotesAndLetters.ini");
         if (ini) config=readConfig(ini);setDebug(config.debug);
         auto* h=RE::TESDataHandler::GetSingleton();
+        for (auto* cell:h->GetFormArray<RE::TESObjectCELL>()) if (cell) discoveryCells.push_back(cell->GetFormID());
         unsigned repairedArt=0;
         for (unsigned i=0;i<books.size();++i) {
             books[i]=h->LookupForm<RE::TESObjectBOOK>(0x800+i,"NotesAndLetters.esp");
@@ -61,9 +68,9 @@ public:
         if (auto* crosshair=SKSE::GetCrosshairRefEventSource()) crosshair->AddEventSink(this);
         auto* src=RE::ScriptEventSourceHolder::GetSingleton();src->AddEventSink<RE::TESObjectLoadedEvent>(this);src->AddEventSink<RE::TESContainerChangedEvent>(this);src->AddEventSink<RE::TESTrackedStatsEvent>(this);src->AddEventSink<RE::TESUniqueIDChangeEvent>(this);
         logger::info("Catalog resolved={}; NPC notes use direct inventories; optional Shadowfoot cell={}",formsReady,homes[6]!=nullptr);
-        worker=std::jthread([this](std::stop_token stop) {unsigned tick=0;while (!stop.stop_requested()) {std::this_thread::sleep_for(250ms);if (active && !stop.stop_requested()) {if (++tick%10==0) queueScan();}}});
+        worker=std::jthread([this](std::stop_token stop) {while (!stop.stop_requested()) {std::this_thread::sleep_for(33ms);if (active && !stop.stop_requested()) queueScan();}});
     }
-    void reset() {remoteActors.clear();remoteCursor=0;discoveredAt={};repeatNotes=false;debugTarget={};active=false;++session;valid=true;data={};data.random.value=std::chrono::high_resolution_clock::now().time_since_epoch().count();queued=false;{std::scoped_lock lock(inboxMutex);movements.clear();uniqueChanges.clear();investments.clear();}}
+    void reset() {resetWork();repeatNotes=false;debugTarget={};active=false;++session;valid=true;data={};data.random.value=std::chrono::high_resolution_clock::now().time_since_epoch().count();queued=false;{std::scoped_lock lock(inboxMutex);movements.clear();uniqueChanges.clear();investments.clear();}}
     std::string inactiveReason() const {
         if (!formsReady) return "Notes and Letters: required game/plugin records are unresolved. Enable NotesAndLetters.esp; see the Required forms line in NotesAndLetters.log.";
         if (!valid) return "Notes and Letters: saved note metadata is unreadable. Load an earlier matching ESS/SKSE save; existing notes have not been regenerated.";
@@ -74,7 +81,7 @@ public:
         // Save compatibility only: stop the retired helper without operating its AI or aliases.
         if (auto* legacy=RE::TESDataHandler::GetSingleton()->LookupForm<RE::TESQuest>(0xC00,"NotesAndLetters.esp");legacy && legacy->IsRunning()) {legacy->Stop();logger::info("Stopped retired courier helper quest");}
         data.helperDelivery=false;data.courierKey=0;data.courierTarget=0;data.sceneSeen=false;
-        queued=false;notificationOutstanding=false;active=true;queueScan();
+        resetWork();for (const auto& [id,state]:data.actors) rememberActor(id);queued=false;notificationOutstanding=false;active=true;queueScan();
         logger::info("Notes enabled: {} NPC states, {} note instances; NPC placement is direct",data.actors.size(),data.notes.size());
     }
     template<class F> void queue(F f) {auto epoch=session.load();SKSE::GetTaskInterface()->AddTask([this,epoch,f=std::move(f)] {if (active && session==epoch) f();});}
@@ -163,6 +170,11 @@ public:
     RE::Actor* spouse() const {if (!marriage || !marriage->IsRunning()) return nullptr;auto ref=marriage->GetAliasedRef(0).get();return ref ? ref->As<RE::Actor>() : nullptr;}
     void playerLetters(RE::Actor* a,ActorState& s,double day) {
         if (!a->GetActorBase()->IsUnique()) return;
+        // Relationships can change independently of letter due dates. Re-evaluate at
+        // most once per ten real seconds, without changing persisted game-day timers.
+        const auto real=std::chrono::steady_clock::now();auto& checked=relationshipChecks[a->GetFormID()];
+        if (!repeatNotes && checked.time_since_epoch().count() && real-checked<10s) return;
+        checked=real;
         auto* partner=spouse();const auto rank=relationship(a);
         const std::array<bool,4> allowed{a==partner,partner && a!=partner && rank==4,rank>=1 && a!=partner,rank==-1 || rank==-2};
         constexpr std::array<double,4> low{3,14,5,7},high{5,21,7,14};constexpr std::array<unsigned,4> odds{5,1,2,1};
@@ -226,7 +238,7 @@ public:
         if (relationships) playerLetters(a,s,day);
     }
     static void report(const std::string& text) {logger::info("{}",text);if (auto* console=RE::ConsoleLog::GetSingleton()) console->Print("%s",text.c_str());}
-    void setDebug(bool enabled) {config.debug=enabled;if (!enabled && repeatNotes) {repeatNotes=false;}spdlog::set_level(enabled ? spdlog::level::debug : spdlog::level::info);spdlog::flush_on(enabled ? spdlog::level::debug : spdlog::level::info);report(enabled ? "Notes and Letters: debug mode ON" : "Notes and Letters: debug mode OFF");}
+    void setDebug(bool enabled) {config.debug=enabled;if (!enabled && repeatNotes) {repeatNotes=false;}spdlog::set_level(enabled ? spdlog::level::debug : spdlog::level::info);spdlog::flush_on(enabled ? spdlog::level::debug : spdlog::level::warn);report(enabled ? "Notes and Letters: debug mode ON" : "Notes and Letters: debug mode OFF");}
     void toggleRepeat() {
         if (!config.debug) {report("Notes and Letters: enable debug mode with NLDebug first.");return;}
         if (!active || !valid || !formsReady) {report(inactiveReason());return;}
@@ -317,26 +329,47 @@ public:
             for (unsigned j=0;j<amount;++j) {std::string sign=data.random.chance(50) ? sender->GetName() : initial(sender->GetName());if (create(choices[j],container,Purpose::ToPlayer,sender,sign)) notifyCourier();}
         }
     }
-    void remoteNotes(const std::set<unsigned>& loaded) {
-        auto real=std::chrono::steady_clock::now();
-        if (remoteActors.empty() || real-discoveredAt>std::chrono::seconds(60)) {
-            remoteActors.clear();auto [forms,lock]=RE::TESForm::GetAllForms();
-            if (forms) {RE::BSReadLockGuard guard(lock.get());for (const auto& [id,form]:*forms) if (form && form->GetFormType()==RE::FormType::ActorCharacter) remoteActors.push_back(id);}
-            std::sort(remoteActors.begin(),remoteActors.end());remoteCursor=0;discoveredAt=real;
-        }
-        unsigned budget=std::min<unsigned>(32,unsigned(remoteActors.size()));
-        for (unsigned i=0;i<budget;++i) {if (remoteCursor>=remoteActors.size()) remoteCursor=0;auto id=remoteActors[remoteCursor++];if (!loaded.contains(id)) if (auto* actor=RE::TESForm::LookupByID<RE::Actor>(id);eligible(actor)) visit(actor,false);}
+    void discoverActors() {
+        const auto real=std::chrono::steady_clock::now();
+        if (real<nextDiscovery || discoveryCells.empty()) return;
+        if (cellCursor>=discoveryCells.size()) {cellCursor=0;nextDiscovery=real+60s;return;}
+        // Enumerate an already registered cell's references; never load a cell.
+        // No global form-table traversal, sorting, or background engine access.
+        auto* cell=RE::TESForm::LookupByID<RE::TESObjectCELL>(discoveryCells[cellCursor++]);
+        if (cell) cell->ForEachReference([this](RE::TESObjectREFR* ref) {
+            if (ref && ref->As<RE::Actor>()) rememberActor(ref->GetFormID());
+            return RE::BSContainer::ForEachResult::kContinue;
+        });
     }
     void scan() {
-        flush();auto* player=RE::PlayerCharacter::GetSingleton();if (!player || !player->Is3DLoaded() || !RE::UI::GetSingleton() || RE::UI::GetSingleton()->GameIsPaused()) return;
-        recoverQueuedNPCNotes();
-        if (itemCount->value>0) notificationOutstanding=false;
-        else if (std::any_of(data.notes.begin(),data.notes.end(),[this](const auto& row) {return row.second.purpose==Purpose::ToPlayer && row.second.owner==container->GetFormID();})) notifyCourier();
-        std::vector<RE::Actor*> actors;RE::ProcessLists::GetSingleton()->ForEachHighActor([&](RE::Actor* a) {actors.push_back(a);return RE::BSContainer::ForEachResult::kContinue;});
-        std::set<unsigned> loaded;for (auto* a:actors) {loaded.insert(a->GetFormID());visit(a);}
-        remoteNotes(loaded);
-        if (auto* s=spouse();eligible(s) && std::find(actors.begin(),actors.end(),s)==actors.end()) playerLetters(s,data.actors[s->GetFormID()],now());
-        delayedLetters();bundles();houseLetters(actors);
+        auto* player=RE::PlayerCharacter::GetSingleton();if (!player || !player->Is3DLoaded() || !RE::UI::GetSingleton() || RE::UI::GetSingleton()->GameIsPaused()) return;
+        const auto start=std::chrono::steady_clock::now();
+        if (start>=nextMaintenance) {
+            nextMaintenance=start+2500ms;flush();recoverQueuedNPCNotes();
+            if (itemCount->value>0) notificationOutstanding=false;
+            else if (std::any_of(data.notes.begin(),data.notes.end(),[this](const auto& row) {return row.second.purpose==Purpose::ToPlayer && row.second.owner==container->GetFormID();})) notifyCourier();
+            std::vector<RE::Actor*> actors;highActors.clear();
+            RE::ProcessLists::GetSingleton()->ForEachHighActor([&](RE::Actor* a) {if (a) {actors.push_back(a);highActors.insert(a->GetFormID());rememberActor(a->GetFormID());actorWork.add(a->GetFormID());}return RE::BSContainer::ForEachResult::kContinue;});
+            if (auto* s=spouse()) actorWork.add(s->GetFormID());
+            delayedLetters();bundles();houseLetters(actors);
+        }
+        unsigned processed=0;
+        // Bound expensive visits by count AND elapsed time. Never enqueue a
+        // continuation from a task: SKSE may drain it in the same frame.
+        while (processed<4 && !actorWork.empty() && std::chrono::steady_clock::now()-start<2ms) {
+            const auto id=actorWork.pop();visit(RE::TESForm::LookupByID<RE::Actor>(id));++processed;
+        }
+        if (start>=nextRemote && std::chrono::steady_clock::now()-start<2ms) {
+            nextRemote=start+250ms;
+            for (unsigned i=0;i<4 && i<remoteActors.size() && std::chrono::steady_clock::now()-start<2ms;++i) {
+                if (remoteCursor>=remoteActors.size()) remoteCursor=0;
+                auto* actor=RE::TESForm::LookupByID<RE::Actor>(remoteActors[remoteCursor++]);
+                if (actor && !highActors.contains(actor->GetFormID())) visit(actor,false);
+            }
+        }
+        if (std::chrono::steady_clock::now()-start<1ms) discoverActors();
+        const auto elapsed=std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-start).count();
+        if (elapsed>=5.0) logger::warn("Slow note work slice: {:.2f} ms; loaded visits={}, known actors={}, discovery cell={}/{}",elapsed,processed,remoteActors.size(),cellCursor,discoveryCells.size());
     }
     std::string description(RE::TESObjectBOOK* b,RE::ExtraDataList* extras) const {
         auto it=std::find(books.begin(),books.end(),b);if (it==books.end() || !extras) return {};
@@ -345,7 +378,7 @@ public:
         std::string s="<font face='$HandwrittenFont'><p align='left'>"+escaped(n->second.body);
         s+=signatureFooter(escaped(n->second.signature));return s+"</p></font>";
     }
-    RE::BSEventNotifyControl ProcessEvent(const RE::TESObjectLoadedEvent* e,RE::BSTEventSource<RE::TESObjectLoadedEvent>*) override {if (e && e->loaded && active) {auto id=e->formID;queue([this,id] {visit(RE::TESForm::LookupByID<RE::Actor>(id));});}return RE::BSEventNotifyControl::kContinue;}
+    RE::BSEventNotifyControl ProcessEvent(const RE::TESObjectLoadedEvent* e,RE::BSTEventSource<RE::TESObjectLoadedEvent>*) override {if (e && e->loaded && active) {auto id=e->formID;queue([this,id] {if (RE::TESForm::LookupByID<RE::Actor>(id)) {rememberActor(id);actorWork.add(id);}});}return RE::BSEventNotifyControl::kContinue;}
     RE::BSEventNotifyControl ProcessEvent(const RE::TESContainerChangedEvent* e,RE::BSTEventSource<RE::TESContainerChangedEvent>*) override {
         if (e && active && e->itemCount>0 && std::any_of(books.begin(),books.end(),[e](auto* b) {return b && b->GetFormID()==e->baseObj;})) {std::scoped_lock lock(inboxMutex);movements.push_back({e->baseObj,e->uniqueID,e->oldContainer,e->newContainer});}return RE::BSEventNotifyControl::kContinue;
     }
@@ -426,8 +459,8 @@ void message(SKSE::MessagingInterface::Message* e) {
 }
 }
 SKSEPluginLoad(const SKSE::LoadInterface* skse) {
-    SKSE::Init(skse);if (auto path=SKSE::log::log_directory()) {auto sink=std::make_shared<spdlog::sinks::basic_file_sink_mt>((*path/"NotesAndLetters.log").string(),true);spdlog::set_default_logger(std::make_shared<spdlog::logger>("NotesAndLetters",std::move(sink)));spdlog::set_level(spdlog::level::info);spdlog::flush_on(spdlog::level::info);}
-    logger::info("Notes and Letters 1.0.0 development build; runtime {}",REL::Module::get().version().string());
+    SKSE::Init(skse);if (auto path=SKSE::log::log_directory()) {auto sink=std::make_shared<spdlog::sinks::basic_file_sink_mt>((*path/"NotesAndLetters.log").string(),true);spdlog::set_default_logger(std::make_shared<spdlog::logger>("NotesAndLetters",std::move(sink)));spdlog::set_level(spdlog::level::info);spdlog::flush_on(spdlog::level::warn);spdlog::flush_every(3s);}
+    logger::info("Notes and Letters 1.0.1 development build; runtime {}",REL::Module::get().version().string());
     const auto version=REL::Module::get().version();const std::set<unsigned> ae{317,318,323,342,353,629,640,659,1130,1170,1179};
     if (!(version.major()==1 && ((version.minor()==5 && version.patch()==97) || (version.minor()==6 && ae.contains(version.patch())) || (version.minor()==7 && (version.patch()==99 || version.patch()==104))))) {logger::error("Unsupported runtime");return false;}
     auto* api=SKSE::GetSerializationInterface();if (!api || !SKSE::GetTaskInterface()) return false;
