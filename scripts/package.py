@@ -11,7 +11,7 @@ from build_content import main as content
 from verify_binary import main as binary
 
 ROOT=Path(__file__).resolve().parents[1]
-VERSION='1.0.1'
+VERSION='1.1.0'
 
 def validate_esp(path):
     raw=path.read_bytes();tag,size,flags=struct.unpack_from('<4sII',raw);assert tag==b'TES4' and flags&0x200
@@ -56,9 +56,27 @@ def main():
     result['esp_sha256']=digest(package/'NotesAndLetters.esp')
     result['save_schema']=2
     previous=ROOT/'releases/Notes-and-Letters-v1.0.0-a.zip'
+    def stable_fields(raw):
+        records={}
+        pos=24+struct.unpack_from('<I',raw,4)[0]
+        while pos<len(raw):
+            end=pos+struct.unpack_from('<I',raw,pos+4)[0];pos+=24
+            while pos<end:
+                tag,size,flags,form=struct.unpack_from('<4sIII',raw,pos)
+                fields=[];cursor=pos+24;stop=cursor+size
+                while cursor<stop:
+                    key,length=struct.unpack_from('<4sH',raw,cursor);cursor+=6
+                    if key!=b'DESC':fields.append((key,raw[cursor:cursor+length]))
+                    cursor+=length
+                records[form]=(tag,flags,fields);pos=stop
+        return records
     with zipfile.ZipFile(previous) as old:
-        assert old.read('NotesAndLetters.esp')==(package/'NotesAndLetters.esp').read_bytes(), 'Existing ESP records changed'
-    result['esp_byte_identical_to_1_0_0']=True
+        assert stable_fields(old.read('NotesAndLetters.esp'))==stable_fields((package/'NotesAndLetters.esp').read_bytes()), 'Existing record identities or non-text fields changed'
+    result['stable_records_and_non_text_fields_preserved']=True
+    result['rewritten_letter_bodies']=204
+    result['courier_bundle_verified_at_load']=True
+    result['discovery_at_save_load']=True
+    result['live_courier_delivery_tested']=False
     assert 'GetAllForms' not in native and 'std::sort(remoteActors' not in native
     result['global_form_scan_removed']=True
     result['runtime_work_queue']='deduplicated IDs; up to 4 loaded visits/job; 2 ms admission budget'

@@ -1,11 +1,11 @@
 {
-  "version": "1.0.1",
+  "version": "1.1.0",
   "plugin_name": "Notes and Letters",
   "dll_architecture": "x64",
   "windows_loader": "passed",
   "skse_exports": "passed",
   "gameplay_tested": false,
-  "core_behavior_checks": 66902,
+  "core_behavior_checks": 67302,
   "esl_flag": true,
   "compact_book_records": 896,
   "unique_note_texts": 224,
@@ -13,10 +13,14 @@
   "old_delivery_implementation_removed": true,
   "retired_records_inert": true,
   "structural_record_validation": "passed",
-  "dll_sha256": "80a5e376aa4dd659d4c31bbfacd92b10bdf65ac4a931e4e39dd450703628baf7",
-  "esp_sha256": "de39bfb6e89105e6fa0d315794ee23fdb49d1878449cb26b3f03f40aa271d937",
+  "dll_sha256": "54fd31eb20ad0c3cc13b5e67e9a99a97b7dff925b592f4d0da32f9625453dba6",
+  "esp_sha256": "2d71f2efee342229b85ee0915ecc9daccae1b83d99e26ef42b744a8d6ba710d1",
   "save_schema": 2,
-  "esp_byte_identical_to_1_0_0": true,
+  "stable_records_and_non_text_fields_preserved": true,
+  "rewritten_letter_bodies": 204,
+  "courier_bundle_verified_at_load": true,
+  "discovery_at_save_load": true,
+  "live_courier_delivery_tested": false,
   "global_form_scan_removed": true,
   "runtime_work_queue": "deduplicated IDs; up to 4 loaded visits/job; 2 ms admission budget",
   "gameplay_performance_verified": false,
@@ -40,5 +44,6 @@
     "NLDeliverPlayerNote"
   ],
   "safe_extra_data_allocation_bytes": 32,
-  "development_build": true
+  "development_build": true,
+  "event_driven_actor_tracking": true
 }

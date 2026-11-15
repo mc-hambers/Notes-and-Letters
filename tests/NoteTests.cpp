@@ -17,6 +17,13 @@ struct MockHandler {
     template<class T>T* LookupForm(unsigned id,const char* name) {auto* form=LookupForm(id,name);return form && form->type==T::FORMTYPE ? form->template As<T>() : nullptr;}
 };
 int main() {
+    for (unsigned roll=0;roll<100;++roll) {
+        require(courierBundleTarget(0,roll)>=2 && courierBundleTarget(0,roll)<=4);
+        require(courierBundleTarget(1,roll)==2);
+        require(courierBundleTarget(2,roll)==2);
+        require(courierBundleTarget(4,roll)==4);
+    }
+
     {ActorWorkQueue q;q.add(0);require(q.empty());for (unsigned i=1;i<=100;++i) {q.add(i);q.add(i);}for (unsigned i=1;i<=100;++i) require(q.pop()==i);require(q.empty());require(q.pop()==0);q.add(3);q.clear();require(q.empty());q.add(3);require(q.pop()==3);}
 
     {

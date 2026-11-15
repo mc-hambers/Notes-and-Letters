@@ -34,9 +34,9 @@ public:
     std::vector<unsigned> remoteActors, discoveryCells;std::set<unsigned> knownActors;
     std::size_t remoteCursor=0,cellCursor=0;ActorWorkQueue actorWork;std::set<unsigned> highActors;
     std::map<unsigned,std::chrono::steady_clock::time_point> relationshipChecks;
-    std::chrono::steady_clock::time_point nextMaintenance{},nextRemote{},nextDiscovery{};
+    std::chrono::steady_clock::time_point nextMaintenance{},nextRemote{},nextDiscovery{},nextRelationships{};
     void rememberActor(unsigned id) {if (id && knownActors.size()<100000 && knownActors.insert(id).second) remoteActors.push_back(id);}
-    void resetWork() {remoteActors.clear();knownActors.clear();highActors.clear();actorWork.clear();relationshipChecks.clear();remoteCursor=0;cellCursor=0;nextMaintenance={};nextRemote={};nextDiscovery={};}
+    void resetWork() {remoteActors.clear();knownActors.clear();highActors.clear();actorWork.clear();relationshipChecks.clear();remoteCursor=0;cellCursor=0;nextMaintenance={};nextRemote={};nextDiscovery={};nextRelationships={};}
     RE::TESQuest *playerQuest=nullptr,*marriage=nullptr;
     RE::TESObjectREFR *courier=nullptr,*container=nullptr;RE::TESGlobal* itemCount=nullptr;
     RE::BGSKeyword* habitation=nullptr;
@@ -81,7 +81,7 @@ public:
         // Save compatibility only: stop the retired helper without operating its AI or aliases.
         if (auto* legacy=RE::TESDataHandler::GetSingleton()->LookupForm<RE::TESQuest>(0xC00,"NotesAndLetters.esp");legacy && legacy->IsRunning()) {legacy->Stop();logger::info("Stopped retired courier helper quest");}
         data.helperDelivery=false;data.courierKey=0;data.courierTarget=0;data.sceneSeen=false;
-        resetWork();for (const auto& [id,state]:data.actors) rememberActor(id);queued=false;notificationOutstanding=false;active=true;queueScan();
+        resetWork();for (const auto& [id,state]:data.actors) rememberActor(id);queued=false;notificationOutstanding=false;active=true;discoverActorsAtLoad();queueScan();
         logger::info("Notes enabled: {} NPC states, {} note instances; NPC placement is direct",data.actors.size(),data.notes.size());
     }
     template<class F> void queue(F f) {auto epoch=session.load();SKSE::GetTaskInterface()->AddTask([this,epoch,f=std::move(f)] {if (active && session==epoch) f();});}
@@ -131,6 +131,11 @@ public:
         auto id=key(n);data.notes.emplace(id,n);
         extra->Add(new RE::ExtraUniqueID(book->GetFormID(),n.uid));
         owner->AddObjectToContainer(book,extra,1,nullptr);
+        if (!find(owner,n)) {
+            data.notes.erase(id);
+            logger::warn("Could not verify {} instance {} in {:08X}; leaving generation retryable",catalog[index].id,n.uid,n.owner);
+            return {};
+        }
         logger::info("Added {} instance {} to {:08X}",catalog[index].id,n.uid,n.owner);return id;
     }
     RE::ExtraDataList* find(RE::TESObjectREFR* owner,const Instance& n) const {
@@ -300,13 +305,31 @@ public:
             directPlayerLetter(10,a,std::string(a->GetName())+", "+shop,shop);
         }
     }
-    void bundles() {
-        if (!courier || now()<data.bundleDue) return;data.bundleDue=now()+data.random.days(3,5);
-        std::vector<unsigned> old;for (const auto& [id,n]:data.notes) if (n.purpose==Purpose::Bundle && n.owner==courier->GetFormID()) old.push_back(id);
-        for (auto id:old) transfer(id,courier,nullptr);
-        if (!data.random.letterChance(100)) return;
-        const unsigned target=2+unsigned(data.random.next()%3);
-        for (unsigned i=0;i<target;++i) create(pick(unsigned(data.random.next()%8)),courier,Purpose::Bundle);
+    void bundles(bool repair=false) {
+        if (!courier) return;
+        const double day=now();
+        if (!repair && day<data.bundleDue) return;
+        std::vector<unsigned> carried;
+        for (auto& [id,note]:data.notes) if (note.purpose==Purpose::Bundle && note.owner==courier->GetFormID()) {
+            if (find(courier,note)) carried.push_back(id);
+            else note.owner=0;
+        }
+        const bool refresh=day>=data.bundleDue;
+        if (refresh) {
+            for (auto id:carried) transfer(id,courier,nullptr);
+            carried.clear();
+            // Failed removals remain counted, so refreshing cannot stack bundles.
+            for (const auto& [id,note]:data.notes)
+                if (note.purpose==Purpose::Bundle && note.owner==courier->GetFormID() && find(courier,note))
+                    carried.push_back(id);
+        }
+        const unsigned target=courierBundleTarget(unsigned(carried.size()),unsigned(data.random.next()%3));
+        unsigned added=0;
+        for (unsigned i=unsigned(carried.size());i<target;++i)
+            if (create(pick(unsigned(data.random.next()%8)),courier,Purpose::Bundle)) ++added;
+        const auto total=carried.size()+added;
+        data.bundleDue=total>=2 ? day+data.random.days(3,5) : day+1.0/24.0;
+        logger::info("Courier pocket bundle verified: {} notes; delivery quest independent",total);
     }
     void houseLetters(const std::vector<RE::Actor*>& actors) {
         auto* player=RE::PlayerCharacter::GetSingleton();unsigned owned=0;
@@ -329,17 +352,23 @@ public:
             for (unsigned j=0;j<amount;++j) {std::string sign=data.random.chance(50) ? sender->GetName() : initial(sender->GetName());if (create(choices[j],container,Purpose::ToPlayer,sender,sign)) notifyCourier();}
         }
     }
-    void discoverActors() {
-        const auto real=std::chrono::steady_clock::now();
-        if (real<nextDiscovery || discoveryCells.empty()) return;
-        if (cellCursor>=discoveryCells.size()) {cellCursor=0;nextDiscovery=real+60s;return;}
-        // Enumerate an already registered cell's references; never load a cell.
-        // No global form-table traversal, sorting, or background engine access.
-        auto* cell=RE::TESForm::LookupByID<RE::TESObjectCELL>(discoveryCells[cellCursor++]);
-        if (cell) cell->ForEachReference([this](RE::TESObjectREFR* ref) {
-            if (ref && ref->As<RE::Actor>()) rememberActor(ref->GetFormID());
-            return RE::BSContainer::ForEachResult::kContinue;
-        });
+    void discoverActorsAtLoad() {
+        const auto start=std::chrono::steady_clock::now();
+        // References are already registered. Do not request cells or 3D.
+        for (auto cellID:discoveryCells) if (auto* cell=RE::TESForm::LookupByID<RE::TESObjectCELL>(cellID))
+            cell->ForEachReference([this](RE::TESObjectREFR* ref) {
+                if (auto* actor=ref ? ref->As<RE::Actor>() : nullptr) rememberActor(actor->GetFormID());
+                return RE::BSContainer::ForEachResult::kContinue;
+            });
+        if (auto* processes=RE::ProcessLists::GetSingleton())
+            processes->ForEachHighActor([this](RE::Actor* actor) {
+                if (actor) {rememberActor(actor->GetFormID());highActors.insert(actor->GetFormID());actorWork.add(actor->GetFormID());}
+                return RE::BSContainer::ForEachResult::kContinue;
+            });
+        bundles(true);
+        logger::info("Save-load note discovery: {} known actors in {:.3f} ms; Loading Menu open={}",knownActors.size(),
+            std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-start).count(),
+            RE::UI::GetSingleton()->IsMenuOpen(RE::LoadingMenu::MENU_NAME));
     }
     void scan() {
         auto* player=RE::PlayerCharacter::GetSingleton();if (!player || !player->Is3DLoaded() || !RE::UI::GetSingleton() || RE::UI::GetSingleton()->GameIsPaused()) return;
@@ -348,9 +377,19 @@ public:
             nextMaintenance=start+2500ms;flush();recoverQueuedNPCNotes();
             if (itemCount->value>0) notificationOutstanding=false;
             else if (std::any_of(data.notes.begin(),data.notes.end(),[this](const auto& row) {return row.second.purpose==Purpose::ToPlayer && row.second.owner==container->GetFormID();})) notifyCourier();
-            std::vector<RE::Actor*> actors;highActors.clear();
-            RE::ProcessLists::GetSingleton()->ForEachHighActor([&](RE::Actor* a) {if (a) {actors.push_back(a);highActors.insert(a->GetFormID());rememberActor(a->GetFormID());actorWork.add(a->GetFormID());}return RE::BSContainer::ForEachResult::kContinue;});
-            if (auto* s=spouse()) actorWork.add(s->GetFormID());
+            std::vector<RE::Actor*> actors;
+            const bool relationshipPass=start>=nextRelationships;
+            if (relationshipPass) nextRelationships=start+10s;
+            for (auto id:highActors) if (auto* actor=RE::TESForm::LookupByID<RE::Actor>(id);actor && actor->Is3DLoaded()) {
+                actors.push_back(actor);
+                const auto found=data.actors.find(id);
+                if (repeatNotes || found==data.actors.end() || npcRefreshDue(found->second,now(),false) || relationshipPass)
+                    actorWork.add(id);
+            }
+            if (auto* actor=spouse()) {
+                rememberActor(actor->GetFormID());
+                if (relationshipPass) actorWork.add(actor->GetFormID());
+            }
             delayedLetters();bundles();houseLetters(actors);
         }
         unsigned processed=0;
@@ -363,11 +402,14 @@ public:
             nextRemote=start+250ms;
             for (unsigned i=0;i<4 && i<remoteActors.size() && std::chrono::steady_clock::now()-start<2ms;++i) {
                 if (remoteCursor>=remoteActors.size()) remoteCursor=0;
-                auto* actor=RE::TESForm::LookupByID<RE::Actor>(remoteActors[remoteCursor++]);
-                if (actor && !highActors.contains(actor->GetFormID())) visit(actor,false);
+                const auto id=remoteActors[remoteCursor++];
+                if (highActors.contains(id)) continue;
+                const auto found=data.actors.find(id);
+                if (!repeatNotes && found!=data.actors.end() && !npcRefreshDue(found->second,now(),false)) continue;
+                if (auto* actor=RE::TESForm::LookupByID<RE::Actor>(id)) visit(actor,false);
             }
         }
-        if (std::chrono::steady_clock::now()-start<1ms) discoverActors();
+
         const auto elapsed=std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-start).count();
         if (elapsed>=5.0) logger::warn("Slow note work slice: {:.2f} ms; loaded visits={}, known actors={}, discovery cell={}/{}",elapsed,processed,remoteActors.size(),cellCursor,discoveryCells.size());
     }
@@ -378,7 +420,16 @@ public:
         std::string s="<font face='$HandwrittenFont'><p align='left'>"+escaped(n->second.body);
         s+=signatureFooter(escaped(n->second.signature));return s+"</p></font>";
     }
-    RE::BSEventNotifyControl ProcessEvent(const RE::TESObjectLoadedEvent* e,RE::BSTEventSource<RE::TESObjectLoadedEvent>*) override {if (e && e->loaded && active) {auto id=e->formID;queue([this,id] {if (RE::TESForm::LookupByID<RE::Actor>(id)) {rememberActor(id);actorWork.add(id);}});}return RE::BSEventNotifyControl::kContinue;}
+    RE::BSEventNotifyControl ProcessEvent(const RE::TESObjectLoadedEvent* e,RE::BSTEventSource<RE::TESObjectLoadedEvent>*) override {
+        if (e && active) {const auto id=e->formID;const bool loaded=e->loaded;queue([this,id,loaded] {
+            if (!loaded) {highActors.erase(id);return;}
+            if (RE::TESForm::LookupByID<RE::Actor>(id)) {
+                rememberActor(id);highActors.insert(id);actorWork.add(id);
+                if (courier && id==courier->GetFormID()) bundles(true);
+            }
+        });}
+        return RE::BSEventNotifyControl::kContinue;
+    }
     RE::BSEventNotifyControl ProcessEvent(const RE::TESContainerChangedEvent* e,RE::BSTEventSource<RE::TESContainerChangedEvent>*) override {
         if (e && active && e->itemCount>0 && std::any_of(books.begin(),books.end(),[e](auto* b) {return b && b->GetFormID()==e->baseObj;})) {std::scoped_lock lock(inboxMutex);movements.push_back({e->baseObj,e->uniqueID,e->oldContainer,e->newContainer});}return RE::BSEventNotifyControl::kContinue;
     }
@@ -460,7 +511,7 @@ void message(SKSE::MessagingInterface::Message* e) {
 }
 SKSEPluginLoad(const SKSE::LoadInterface* skse) {
     SKSE::Init(skse);if (auto path=SKSE::log::log_directory()) {auto sink=std::make_shared<spdlog::sinks::basic_file_sink_mt>((*path/"NotesAndLetters.log").string(),true);spdlog::set_default_logger(std::make_shared<spdlog::logger>("NotesAndLetters",std::move(sink)));spdlog::set_level(spdlog::level::info);spdlog::flush_on(spdlog::level::warn);spdlog::flush_every(3s);}
-    logger::info("Notes and Letters 1.0.1 development build; runtime {}",REL::Module::get().version().string());
+    logger::info("Notes and Letters 1.1.0 development build; runtime {}",REL::Module::get().version().string());
     const auto version=REL::Module::get().version();const std::set<unsigned> ae{317,318,323,342,353,629,640,659,1130,1170,1179};
     if (!(version.major()==1 && ((version.minor()==5 && version.patch()==97) || (version.minor()==6 && ae.contains(version.patch())) || (version.minor()==7 && (version.patch()==99 || version.patch()==104))))) {logger::error("Unsupported runtime");return false;}
     auto* api=SKSE::GetSerializationInterface();if (!api || !SKSE::GetTaskInterface()) return false;

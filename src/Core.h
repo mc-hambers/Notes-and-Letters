@@ -23,6 +23,9 @@ struct Random {
     // Old percentage weights on 200 outcomes halve generation without rounding 0.5% away.
     bool letterChance(unsigned oldPercent) {return next()%200<oldPercent;}
 };
+inline unsigned courierBundleTarget(unsigned carried,unsigned roll) {
+    return carried ? std::max(2u,carried) : 2u+roll%3u;
+}
 enum Role : unsigned { Ordinary, Beggar, Bandit, Guard, Noble, Bard, Farmer, Merchant, Smith, Innkeeper, Healer, Scholar, Hunter, Worker, Settler };
 inline int categoryWeight(Role role,unsigned category) {
     if (category==5 && !(role==Merchant || role==Smith || role==Innkeeper || role==Farmer || role==Worker)) return 0;

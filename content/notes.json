@@ -1,0 +1,2018 @@
+[
+  {
+    "category": "love",
+    "title": "A Quiet Confession",
+    "body": "I love you. There, it's on paper now. Seems easier to say when you aren't looking at me.",
+    "id": "NPC-L01",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "love",
+    "title": "Dear to Me",
+    "body": "You have a way of making a cold room feel warm. I don't mean the fire.",
+    "id": "NPC-L02",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "love",
+    "title": "A Tender Thought",
+    "body": "I tried to make this rhyme. It was awful. I love you will have to do.",
+    "id": "NPC-L03",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "love",
+    "title": "A Familiar Smile",
+    "body": "There isn't much space on this scrap, but I wanted some of it to belong to you.",
+    "id": "NPC-L04",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "love",
+    "title": "Poor Words",
+    "body": "I like the quiet with you. Most people make me feel I ought to fill it.",
+    "id": "NPC-L05",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "love",
+    "title": "Simple Happiness",
+    "body": "I was going to write something clever. All I've got is that I'm very fond of you.",
+    "id": "NPC-L06",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "love",
+    "title": "A Warm Heart",
+    "body": "You make me smile like a fool. It's getting rather hard to hide.",
+    "id": "NPC-L07",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "love",
+    "title": "Still Yours",
+    "body": "I've crossed out three starts to this note. None said it any better. I love you.",
+    "id": "NPC-L08",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "love",
+    "title": "Near in Thought",
+    "body": "Some days I feel old and cross. Somehow there's still a soft bit of me that's yours.",
+    "id": "NPC-L09",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "love",
+    "title": "A Shy Confession",
+    "body": "I'd know your laugh in a room full of people. That's a nice thing to know.",
+    "id": "NPC-L10",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "love",
+    "title": "Quiet Comfort",
+    "body": "I'm not much for sweet words. But you matter to me, more than I'm any good at saying.",
+    "id": "NPC-L11",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "love",
+    "title": "Ordinary Love",
+    "body": "It still catches me off guard, how much I care about you.",
+    "id": "NPC-L12",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "love",
+    "title": "Loved Deeply",
+    "body": "I love you, even the bits that would drive anyone else mad. Perhaps those most of all.",
+    "id": "NPC-L13",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "love",
+    "title": "A Foolish Heart",
+    "body": "My hand shakes a little writing this. Nothing wrong with it. I'm just thinking of you.",
+    "id": "NPC-L14",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "love",
+    "title": "Lasting Affection",
+    "body": "You don't have to be cheerful for me. I like you on the grey days too.",
+    "id": "NPC-L15",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "love",
+    "title": "An Unadorned Truth",
+    "body": "A whole page wouldn't be enough. This little scrap will have to carry the rest.",
+    "id": "NPC-L16",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "love",
+    "title": "A Heart at Ease",
+    "body": "I keep trying to make this sound less foolish. It seems love makes fools of us.",
+    "id": "NPC-L17",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "love",
+    "title": "Dear Beyond Reason",
+    "body": "You're the first person I want beside me when the world gets too loud.",
+    "id": "NPC-L18",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "love",
+    "title": "A Certain Feeling",
+    "body": "I love you. I'm leaving that plain, before I spoil it with too many words.",
+    "id": "NPC-L19",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "love",
+    "title": "Tenderly Yours",
+    "body": "I dont know a grand way to say it. I'd choose you again.",
+    "id": "NPC-L20",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "sympathy",
+    "title": "Deepest Sympathy",
+    "body": "I'm sorry. Everything else I put after that felt too small, so I'll leave it there.",
+    "id": "NPC-S01",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "sympathy",
+    "title": "No Right Words",
+    "body": "I wish there were words that made a loss lighter. I haven't found them.",
+    "id": "NPC-S02",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "sympathy",
+    "title": "A Dear Memory",
+    "body": "You needn't find an answer to this. I just wanted you to know I care.",
+    "id": "NPC-S03",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "sympathy",
+    "title": "In Sorrow",
+    "body": "A quiet room can feel cruel after someone is gone. I'm so sorry.",
+    "id": "NPC-S04",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "sympathy",
+    "title": "Grief Has No Measure",
+    "body": "I hope the good memories bring some warmth, even if they hurt a little too.",
+    "id": "NPC-S05",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "sympathy",
+    "title": "Kindly Remembered",
+    "body": "There isn't a right way to grieve. Don't let anyone tell you there is.",
+    "id": "NPC-S06",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "sympathy",
+    "title": "The Weight of Loss",
+    "body": "I'm sorry for your loss. That sounds thin on paper. I mean it with all my heart.",
+    "id": "NPC-S07",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "sympathy",
+    "title": "Shared Sadness",
+    "body": "A life leaves more behind than an empty chair. I hope that brings you some comfort.",
+    "id": "NPC-S08",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "sympathy",
+    "title": "Gentle Thoughts",
+    "body": "Some days are only for getting through. That is enough.",
+    "id": "NPC-S09",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "sympathy",
+    "title": "Love and Absence",
+    "body": "You have my sympathy. I wish I had something better to offer than ink.",
+    "id": "NPC-S10",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "sympathy",
+    "title": "A Small Condolence",
+    "body": "The world ought to stop for a loss like yours. It feels wrong that it doesn't.",
+    "id": "NPC-S11",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "sympathy",
+    "title": "A Dear Life",
+    "body": "You needn't be brave every moment. Being tired doesn't mean you loved any less.",
+    "id": "NPC-S12",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "sympathy",
+    "title": "Through Sorrow",
+    "body": "I hope there are gentle moments among the hard ones.",
+    "id": "NPC-S13",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "sympathy",
+    "title": "Quiet Sympathy",
+    "body": "I'm thinking of you with a heavy heart. No fine words today.",
+    "id": "NPC-S14",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "sympathy",
+    "title": "Not Forgotten",
+    "body": "You can miss someone and smile at a memory in the same breath.",
+    "id": "NPC-S15",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "sympathy",
+    "title": "A Gentle Memory",
+    "body": "There are things a person never gets used to. I hope this grows easier to carry.",
+    "id": "NPC-S16",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "sympathy",
+    "title": "Words Beside Sorrow",
+    "body": "I'm so sorry. Please don't feel you owe anyone a cheerful face.",
+    "id": "NPC-S17",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "sympathy",
+    "title": "A Life Remembered",
+    "body": "Grief takes up so much room. I hope kindness finds a little room beside it.",
+    "id": "NPC-S18",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "sympathy",
+    "title": "With Compassion",
+    "body": "I wish this were a note about anything else. You have my deepest sympathy.",
+    "id": "NPC-S19",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "sympathy",
+    "title": "Room for Grief",
+    "body": "It hardly seems fair. I havn't anything wise to say, only that I'm sorry.",
+    "id": "NPC-S20",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "congratulations",
+    "title": "Another Year",
+    "body": "Happy birthday. Another year older, and still more sense than most of us.",
+    "id": "NPC-C01",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "congratulations",
+    "title": "A Happy Milestone",
+    "body": "Well done. I hope you're letting yourself feel proud of it.",
+    "id": "NPC-C02",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "congratulations",
+    "title": "Wedding Wishes",
+    "body": "A new baby! Such a small person to take up so much of a heart.",
+    "id": "NPC-C03",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "congratulations",
+    "title": "A New Arrival",
+    "body": "Congratulations to you both. May your marriage have plenty of laughter in it.",
+    "id": "NPC-C04",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "congratulations",
+    "title": "Well Deserved",
+    "body": "Happy birthday. May your knees be kind and your cup be full.",
+    "id": "NPC-C05",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "congratulations",
+    "title": "Good Fortune",
+    "body": "You deserve a good day. I hope this is the start of several.",
+    "id": "NPC-C06",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "congratulations",
+    "title": "A Proud Moment",
+    "body": "That's something worth being proud of. Don't brush it off.",
+    "id": "NPC-C07",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "congratulations",
+    "title": "A Happy Occasion",
+    "body": "A new home of your own. I hope it feels like yours before long.",
+    "id": "NPC-C08",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "congratulations",
+    "title": "Many Years Together",
+    "body": "Congratulations. That little word looks too small for such good news.",
+    "id": "NPC-C09",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "congratulations",
+    "title": "Birthday Wishes",
+    "body": "Happy birthday, you old goat. That's meant fondly.",
+    "id": "NPC-C10",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "congratulations",
+    "title": "A Fresh Chapter",
+    "body": "A child brings so much hope into a room. Warm wishes to your growing family.",
+    "id": "NPC-C11",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "congratulations",
+    "title": "A Well-Earned Rest",
+    "body": "To the newly married pair. May you be kind to each other when you're tired.",
+    "id": "NPC-C12",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "congratulations",
+    "title": "Simple Congratulations",
+    "body": "Good news for once! It feels good just to put those words on paper.",
+    "id": "NPC-C13",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "congratulations",
+    "title": "A Reason for Joy",
+    "body": "Another year. I hope there's more joy than worry in this one.",
+    "id": "NPC-C14",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "congratulations",
+    "title": "A New Beginning",
+    "body": "Well done. You needn't be shy about enjoying it.",
+    "id": "NPC-C15",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "congratulations",
+    "title": "A Birthday Blessing",
+    "body": "A fresh start is a fine thing. I hope yours is a happy one.",
+    "id": "NPC-C16",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "congratulations",
+    "title": "Joy in Small Letters",
+    "body": "Congratulations on the little one. May there be strong lungs and a gentle temper.",
+    "id": "NPC-C17",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "congratulations",
+    "title": "A Year Worth Marking",
+    "body": "Happy birthday. You're still younger than you will be next year.",
+    "id": "NPC-C18",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "congratulations",
+    "title": "Well-Earned Pride",
+    "body": "I'm glad there's something to smile about. You deserve it.",
+    "id": "NPC-C19",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "congratulations",
+    "title": "Happiness to You",
+    "body": "Congratualtions! I wrote that too fast. You know what I mean.",
+    "id": "NPC-C20",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "thanks",
+    "title": "Much Valued",
+    "body": "Thank you. I know it's only two words, but they're honest ones.",
+    "id": "NPC-T01",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "thanks",
+    "title": "Quiet Gratitude",
+    "body": "It's good to have someone like you in the world.",
+    "id": "NPC-T02",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "thanks",
+    "title": "Old Friends",
+    "body": "You're kinder than you need to be. I hope you know that.",
+    "id": "NPC-T03",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "thanks",
+    "title": "Kind at Heart",
+    "body": "I don't say it well out loud. I'm glad you're my friend.",
+    "id": "NPC-T04",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "thanks",
+    "title": "A Good Friend",
+    "body": "A small thank you, on a rather grubby bit of paper. It still counts.",
+    "id": "NPC-T05",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "thanks",
+    "title": "Warm Appreciation",
+    "body": "Some people make everything harder. You aren't one of them.",
+    "id": "NPC-T06",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "thanks",
+    "title": "More Than Words",
+    "body": "I hope you know how much you're worth to the people who care about you.",
+    "id": "NPC-T07",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "thanks",
+    "title": "A Dear Friend",
+    "body": "You make things feel a little less lonely. Thank you for that.",
+    "id": "NPC-T08",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "thanks",
+    "title": "Remembered Fondly",
+    "body": "This is just a friend's thanks. No great reason needed.",
+    "id": "NPC-T09",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "thanks",
+    "title": "Honest Thanks",
+    "body": "I'm not good at warm words. Please take these as warmly as I mean them.",
+    "id": "NPC-T10",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "thanks",
+    "title": "Good in the World",
+    "body": "You've got a good heart. Don't let anyone make you feel foolish for it.",
+    "id": "NPC-T11",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "thanks",
+    "title": "Small Words",
+    "body": "I like knowing there are decent people about. You're one of mine.",
+    "id": "NPC-T12",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "thanks",
+    "title": "No Occasion Needed",
+    "body": "Thank you. There ought to be a bigger word for it sometimes.",
+    "id": "NPC-T13",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "thanks",
+    "title": "A Grateful Heart",
+    "body": "Good friends are scarce. I'm glad I can count you among them.",
+    "id": "NPC-T14",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "thanks",
+    "title": "Glad of You",
+    "body": "I know I sound cross half the time. That doesn't mean I'm not grateful.",
+    "id": "NPC-T15",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "thanks",
+    "title": "Friendship on Paper",
+    "body": "You're a comfort to know. I thought you ought to hear it.",
+    "id": "NPC-T16",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "thanks",
+    "title": "Simply Appreciated",
+    "body": "There isn't any grand speech here. Just honest thanks.",
+    "id": "NPC-T17",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "thanks",
+    "title": "A Rare Kindness",
+    "body": "A kind heart is worth more than a heavy purse. Yours, anyway.",
+    "id": "NPC-T18",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "thanks",
+    "title": "A Small Tribute",
+    "body": "I'm glad of you. That's the whole note.",
+    "id": "NPC-T19",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "thanks",
+    "title": "Warmly Valued",
+    "body": "Thank you for being a freind. Apparently spelling is harder than gratitude.",
+    "id": "NPC-T20",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "encouragement",
+    "title": "Healing Wishes",
+    "body": "I hope you're feeling a little better. A little counts.",
+    "id": "NPC-G01",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "encouragement",
+    "title": "A Little Comfort",
+    "body": "Rest isn't something you have to earn. You need it, same as anyone.",
+    "id": "NPC-G02",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "encouragement",
+    "title": "Better Days",
+    "body": "A bad day isn't a whole life. I hope tomorrow feels kinder.",
+    "id": "NPC-G03",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "encouragement",
+    "title": "Worthy of Kindness",
+    "body": "You needn't put on a brave face with me.",
+    "id": "NPC-G04",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "encouragement",
+    "title": "Still Valued",
+    "body": "Healing is slow, and waiting is rotten. I'm hoping for easier days for you.",
+    "id": "NPC-G05",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "encouragement",
+    "title": "A Slow Recovery",
+    "body": "I wish you a quiet head, a warm bed, and a decent night's sleep.",
+    "id": "NPC-G06",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "encouragement",
+    "title": "Strength Within",
+    "body": "You're allowed to be tired. Even the strongest back needs a rest.",
+    "id": "NPC-G07",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "encouragement",
+    "title": "In Hard Times",
+    "body": "I hope the ache eases soon. It's miserable feeling unlike yourself.",
+    "id": "NPC-G08",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "encouragement",
+    "title": "A Gentle Hope",
+    "body": "One small good thing can be enough for a day.",
+    "id": "NPC-G09",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "encouragement",
+    "title": "Faith in You",
+    "body": "There's no shame in needing help. I mean that.",
+    "id": "NPC-G10",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "encouragement",
+    "title": "No Measure of Worth",
+    "body": "I hope your strength comes back a little at a time.",
+    "id": "NPC-G11",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "encouragement",
+    "title": "Peaceful Wishes",
+    "body": "You don't have to mend all at once. Slow is still mending.",
+    "id": "NPC-G12",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "encouragement",
+    "title": "A Setback",
+    "body": "A hard winter doesn't last forever, though it can feel that way.",
+    "id": "NPC-G13",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "encouragement",
+    "title": "Dear to Others",
+    "body": "Be as kind to yourself as you are to everyone else.",
+    "id": "NPC-G14",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "encouragement",
+    "title": "Quiet Encouragement",
+    "body": "I hope something makes you laugh today. Even if it hurts a bit.",
+    "id": "NPC-G15",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "encouragement",
+    "title": "A Kinder Morning",
+    "body": "I'm sorry things feel so heavy. You aren't weak for finding them heavy.",
+    "id": "NPC-G16",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "encouragement",
+    "title": "Strength Without Hurry",
+    "body": "Some days keeping going is plenty. Don't ask more of yourself than that.",
+    "id": "NPC-G17",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "encouragement",
+    "title": "More Than a Hard Day",
+    "body": "I hope there's less pain and more peace in the days ahead.",
+    "id": "NPC-G18",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "encouragement",
+    "title": "Hope in Plain Words",
+    "body": "You matter, even when you don't feel much use to anyone.",
+    "id": "NPC-G19",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "encouragement",
+    "title": "A Patient Wish",
+    "body": "I hope you feel better tomorow. And if not tomorrow, soon.",
+    "id": "NPC-G20",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "business",
+    "title": "Valued Custom",
+    "body": "Please count the crates before signing. It saves hard words later.",
+    "id": "NPC-B01",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "business",
+    "title": "Respectful Regards",
+    "body": "A fair price and sound goods. That's all I ask.",
+    "id": "NPC-B02",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "business",
+    "title": "A Good Reputation",
+    "body": "The coin needs counting twice. Trust is good. Sums are better.",
+    "id": "NPC-B03",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "business",
+    "title": "Honest Trade",
+    "body": "I'd rather hear a plain no than a yes that means nothing.",
+    "id": "NPC-B04",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "business",
+    "title": "Mutual Respect",
+    "body": "Good iron is worth paying for. Rust with a fine story isn't.",
+    "id": "NPC-B05",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "business",
+    "title": "Plain Appreciation",
+    "body": "A small shop can't afford large mistakes.",
+    "id": "NPC-B06",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "business",
+    "title": "Pride in Craft",
+    "body": "If the price has changed, put it in ink. My memory isn't a ledger.",
+    "id": "NPC-B07",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "business",
+    "title": "Fair Dealing",
+    "body": "I'd sooner keep a good customer than squeeze the last septim out of one.",
+    "id": "NPC-B08",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "business",
+    "title": "Valued Trust",
+    "body": "Please write the full amount. A smudge isn't a number.",
+    "id": "NPC-B09",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "business",
+    "title": "Sound Work",
+    "body": "There's room for both of us to earn a living. No need to make enemies of it.",
+    "id": "NPC-B10",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "business",
+    "title": "A Fellow Tradesperson",
+    "body": "A promise doesn't weigh much against an empty purse.",
+    "id": "NPC-B11",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "business",
+    "title": "Good Standing",
+    "body": "I don't mind a hard bargain. I mind finding a different one on the bill.",
+    "id": "NPC-B12",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "business",
+    "title": "Worthy Skill",
+    "body": "Dry goods need dry crates. That ought to go without saying.",
+    "id": "NPC-B13",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "business",
+    "title": "Good Wishes",
+    "body": "Good work deserves good pay. Cheap work usually costs twice.",
+    "id": "NPC-B14",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "business",
+    "title": "Honest Measures",
+    "body": "A tidy account makes for a peaceful night.",
+    "id": "NPC-B15",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "business",
+    "title": "Respect for a Craft",
+    "body": "I value steady trade more than a quick handful of coin.",
+    "id": "NPC-B16",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "business",
+    "title": "A Customer's Regard",
+    "body": "Please leave room for the tally marks. These margins are too narrow.",
+    "id": "NPC-B17",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "business",
+    "title": "Worth More Than Coin",
+    "body": "A price in writing is kinder to everyone.",
+    "id": "NPC-B18",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "business",
+    "title": "A Tradesperson's Esteem",
+    "body": "I'm happy with fair terms. I don't need fancy ones.",
+    "id": "NPC-B19",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "business",
+    "title": "The Value of Care",
+    "body": "Please check the reciept. The second figure is a seven, however it looks.",
+    "id": "NPC-B20",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "welcome",
+    "title": "A New Neighbor",
+    "body": "Welcome. I hope this place starts to feel like home soon.",
+    "id": "NPC-W01",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "welcome",
+    "title": "Among Colleagues",
+    "body": "New faces make a town less dull. I'm glad yours is here.",
+    "id": "NPC-W02",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "welcome",
+    "title": "A Sense of Belonging",
+    "body": "A warm hearth and quiet nights to you.",
+    "id": "NPC-W03",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "welcome",
+    "title": "Settling In",
+    "body": "It takes time to know a place. I hope it treats you kindly while you do.",
+    "id": "NPC-W04",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "welcome",
+    "title": "A Kindly Welcome",
+    "body": "Welcome, neighbour. That's a good word to have for someone.",
+    "id": "NPC-W05",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "welcome",
+    "title": "Among Friends",
+    "body": "May your roof stay sound and your door find friendly faces.",
+    "id": "NPC-W06",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "welcome",
+    "title": "Glad You Are Here",
+    "body": "I hope you find a corner of this place that feels yours.",
+    "id": "NPC-W07",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "welcome",
+    "title": "A Comfortable Home",
+    "body": "There's always room for one more decent soul.",
+    "id": "NPC-W08",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "welcome",
+    "title": "Part of the Community",
+    "body": "Welcome. No grand speech, just good wishes.",
+    "id": "NPC-W09",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "welcome",
+    "title": "Warm Regards",
+    "body": "Unfamiliar streets don't stay unfamiliar forever.",
+    "id": "NPC-W10",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "welcome",
+    "title": "Finding Your Feet",
+    "body": "A new start can feel rather lonely. I hope yours doesn't for long.",
+    "id": "NPC-W11",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "welcome",
+    "title": "A Quiet Welcome",
+    "body": "May the cold stay outside and the warmth stay in.",
+    "id": "NPC-W12",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "welcome",
+    "title": "Room to Belong",
+    "body": "Welcome to this little patch of Skyrim.",
+    "id": "NPC-W13",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "welcome",
+    "title": "A Friendly Beginning",
+    "body": "I hope the place suits you, draughts and all.",
+    "id": "NPC-W14",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "welcome",
+    "title": "A Good Beginning",
+    "body": "A town is only its people. I'm glad to have another neighbour.",
+    "id": "NPC-W15",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "welcome",
+    "title": "A Place Among Us",
+    "body": "May your days here be ordinary in the nicest way.",
+    "id": "NPC-W16",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "welcome",
+    "title": "New Faces, Warm Wishes",
+    "body": "I hope you can put your feet up and feel at home.",
+    "id": "NPC-W17",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "welcome",
+    "title": "Kindly Neighbors",
+    "body": "Here's a small welcome on a small piece of paper.",
+    "id": "NPC-W18",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "welcome",
+    "title": "An Easy Beginning",
+    "body": "New walls, new faces. I hope there's good in both.",
+    "id": "NPC-W19",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "welcome",
+    "title": "Familiar in Time",
+    "body": "Welcome, neigbour. My spelling's worse than my good wishes.",
+    "id": "NPC-W20",
+    "audience": "npc",
+    "signature": "{random_signature}",
+    "kind": "letter"
+  },
+  {
+    "category": "personal",
+    "title": "Pantry List",
+    "body": "Salt Pile\nBread\nRed Apple\nHoney",
+    "id": "NPC-P01",
+    "audience": "npc",
+    "signature": "",
+    "kind": "list"
+  },
+  {
+    "category": "personal",
+    "title": "Useful Little Things",
+    "body": "Lockpick\nTorch\nLeather Strips",
+    "id": "NPC-P02",
+    "audience": "npc",
+    "signature": "",
+    "kind": "list"
+  },
+  {
+    "category": "personal",
+    "title": "Three Good Qualities",
+    "body": "Patience, honesty, and a sense of humor. Worth more than fine boots.",
+    "id": "NPC-P03",
+    "audience": "npc",
+    "signature": "",
+    "kind": "reflection"
+  },
+  {
+    "category": "personal",
+    "title": "For the Alchemy Shelf",
+    "body": "Lavender\nBlue Mountain Flower\nThistle Branch\nJuniper Berries",
+    "id": "NPC-P04",
+    "audience": "npc",
+    "signature": "",
+    "kind": "list"
+  },
+  {
+    "category": "personal",
+    "title": "A Modest Wish",
+    "body": "A warm room, a sound roof, and enough bread. A modest measure of comfort.",
+    "id": "NPC-P05",
+    "audience": "npc",
+    "signature": "",
+    "kind": "reflection"
+  },
+  {
+    "category": "personal",
+    "title": "A Line About Rain",
+    "body": "Rain has a different voice on every roof.",
+    "id": "NPC-P06",
+    "audience": "npc",
+    "signature": "",
+    "kind": "reflection"
+  },
+  {
+    "category": "personal",
+    "title": "The Shape of a Day",
+    "body": "Morning light. Midday noise. Evening quiet.",
+    "id": "NPC-P07",
+    "audience": "npc",
+    "signature": "",
+    "kind": "reflection"
+  },
+  {
+    "category": "personal",
+    "title": "Cloth and Leather",
+    "body": "Linen Wrap\nLeather\nLeather Strips",
+    "id": "NPC-P08",
+    "audience": "npc",
+    "signature": "",
+    "kind": "list"
+  },
+  {
+    "category": "personal",
+    "title": "Words Worth Keeping",
+    "body": "Enough is a kinder word than more.",
+    "id": "NPC-P09",
+    "audience": "npc",
+    "signature": "",
+    "kind": "reflection"
+  },
+  {
+    "category": "personal",
+    "title": "A Short Provision List",
+    "body": "Bread\nGoat Cheese Wedge\nElves Ear\nNord Mead",
+    "id": "NPC-P10",
+    "audience": "npc",
+    "signature": "",
+    "kind": "list"
+  },
+  {
+    "category": "personal",
+    "title": "Materials List",
+    "body": "Iron Ingot\nSteel Ingot\nCorundum Ingot\nLeather Strips",
+    "id": "NPC-P11",
+    "audience": "npc",
+    "signature": "",
+    "kind": "list"
+  },
+  {
+    "category": "personal",
+    "title": "A Question on Paper",
+    "body": "Is silence still silence when the kettle is singing?",
+    "id": "NPC-P12",
+    "audience": "npc",
+    "signature": "",
+    "kind": "reflection"
+  },
+  {
+    "category": "personal",
+    "title": "Food and Drink",
+    "body": "Sweet Roll\nHoney Nut Treat\nBoiled Creme Treat\nAlto Wine",
+    "id": "NPC-P13",
+    "audience": "npc",
+    "signature": "",
+    "kind": "list"
+  },
+  {
+    "category": "personal",
+    "title": "A Verse of Pines",
+    "body": "The hills are gray, the sky is wide;\nThe pines stand dark on either side.",
+    "id": "NPC-P14",
+    "audience": "npc",
+    "signature": "",
+    "kind": "reflection"
+  },
+  {
+    "category": "personal",
+    "title": "A List of Ingredients",
+    "body": "Frost Mirriam\nGarlic\nJuniper Berries\nSnowberries",
+    "id": "NPC-P15",
+    "audience": "npc",
+    "signature": "",
+    "kind": "list"
+  },
+  {
+    "category": "personal",
+    "title": "A Small Supply List",
+    "body": "Torch\nLockpick\nPotion of Minor Healing",
+    "id": "NPC-P16",
+    "audience": "npc",
+    "signature": "",
+    "kind": "list"
+  },
+  {
+    "category": "personal",
+    "title": "On Good Sense",
+    "body": "A little good sense is less showy than a fine hat and rather more useful.",
+    "id": "NPC-P17",
+    "audience": "npc",
+    "signature": "",
+    "kind": "reflection"
+  },
+  {
+    "category": "personal",
+    "title": "A Weather Thought",
+    "body": "Snow makes even a familiar road look like a new thought.",
+    "id": "NPC-P18",
+    "audience": "npc",
+    "signature": "",
+    "kind": "reflection"
+  },
+  {
+    "category": "personal",
+    "title": "Things for the Table",
+    "body": "Wooden Plate\nWooden Bowl\nTankard",
+    "id": "NPC-P19",
+    "audience": "npc",
+    "signature": "",
+    "kind": "list"
+  },
+  {
+    "category": "personal",
+    "title": "A Pleasant Sound",
+    "body": "A kettle, a hearth, and rain against a shutter. A fine little orchestra.",
+    "id": "NPC-P20",
+    "audience": "npc",
+    "signature": "",
+    "kind": "reflection"
+  },
+  {
+    "category": "player_lover",
+    "title": "My Dearest",
+    "body": "I love you. You know that, but I like putting it where you can read it too.",
+    "id": "PLAYER-LOVE01",
+    "audience": "player",
+    "signature": "{spouse_first_name}",
+    "kind": "letter"
+  },
+  {
+    "category": "player_lover",
+    "title": "Always Dear",
+    "body": "Being married to you still makes me smile. Rather silly of me, perhaps. I don't mind.",
+    "id": "PLAYER-LOVE02",
+    "audience": "player",
+    "signature": "{spouse_first_name}",
+    "kind": "letter"
+  },
+  {
+    "category": "player_lover",
+    "title": "A Spouse's Affection",
+    "body": "You get the best of my heart, even when the rest of me is tired and cross.",
+    "id": "PLAYER-LOVE03",
+    "audience": "player",
+    "signature": "{spouse_first_name}",
+    "kind": "letter"
+  },
+  {
+    "category": "player_lover",
+    "title": "A Heart Beside Yours",
+    "body": "No poem today. Just your spouse being hopelessly fond of you.",
+    "id": "PLAYER-LOVE04",
+    "audience": "player",
+    "signature": "{spouse_first_name}",
+    "kind": "letter"
+  },
+  {
+    "category": "player_lover",
+    "title": "Our Quiet Happiness",
+    "body": "Sometimes I think how odd it is that out of everyone, we found each other.",
+    "id": "PLAYER-LOVE05",
+    "audience": "player",
+    "signature": "{spouse_first_name}",
+    "kind": "letter"
+  },
+  {
+    "category": "player_lover",
+    "title": "Few Words, Much Love",
+    "body": "I like the life that has your name in it.",
+    "id": "PLAYER-LOVE06",
+    "audience": "player",
+    "signature": "{spouse_first_name}",
+    "kind": "letter"
+  },
+  {
+    "category": "player_lover",
+    "title": "A Familiar Tenderness",
+    "body": "You're still my favourite person. Even when you're being a nuisance.",
+    "id": "PLAYER-LOVE07",
+    "audience": "player",
+    "signature": "{spouse_first_name}",
+    "kind": "letter"
+  },
+  {
+    "category": "player_lover",
+    "title": "Dearer Still",
+    "body": "It's good, being us. I hope you feel that too.",
+    "id": "PLAYER-LOVE08",
+    "audience": "player",
+    "signature": "{spouse_first_name}",
+    "kind": "letter"
+  },
+  {
+    "category": "player_lover",
+    "title": "Glad to Be Yours",
+    "body": "I love you on the dull days as much as the bright ones.",
+    "id": "PLAYER-LOVE09",
+    "audience": "player",
+    "signature": "{spouse_first_name}",
+    "kind": "letter"
+  },
+  {
+    "category": "player_lover",
+    "title": "Love Without Finery",
+    "body": "I dont have anything clever to write. Just that I'm glad I married you.",
+    "id": "PLAYER-LOVE10",
+    "audience": "player",
+    "signature": "{spouse_first_name}",
+    "kind": "letter"
+  },
+  {
+    "category": "player_jealousy",
+    "title": "An Unquiet Heart",
+    "body": "You're married. I know. Knowing doesn't seem to help much.",
+    "id": "PLAYER-JEAL01",
+    "audience": "player",
+    "signature": "{other_lover_initial}",
+    "kind": "letter"
+  },
+  {
+    "category": "player_jealousy",
+    "title": "A Bitter Little Truth",
+    "body": "I wish I could be happy for you without that little twist in my chest.",
+    "id": "PLAYER-JEAL02",
+    "audience": "player",
+    "signature": "{other_lover_initial}",
+    "kind": "letter"
+  },
+  {
+    "category": "player_jealousy",
+    "title": "Someone Else's Vows",
+    "body": "Someone else gets to call you theirs. I find I mind that more than I ought to.",
+    "id": "PLAYER-JEAL03",
+    "audience": "player",
+    "signature": "{other_lover_initial}",
+    "kind": "letter"
+  },
+  {
+    "category": "player_jealousy",
+    "title": "An Unwelcome Feeling",
+    "body": "This is a foolish note. I'm jealous, and there's no nice way to write it.",
+    "id": "PLAYER-JEAL04",
+    "audience": "player",
+    "signature": "{other_lover_initial}",
+    "kind": "letter"
+  },
+  {
+    "category": "player_jealousy",
+    "title": "A Quiet Envy",
+    "body": "I keep telling myself to have some sense. So far it isnt working.",
+    "id": "PLAYER-JEAL05",
+    "audience": "player",
+    "signature": "{other_lover_initial}",
+    "kind": "letter"
+  },
+  {
+    "category": "player_investment",
+    "title": "Confidence in Our Trade",
+    "body": "Thank you for putting coin into {shop}. A small shop means an awful lot to the person keeping it.",
+    "id": "PLAYER-INV01",
+    "audience": "player",
+    "signature": "{merchant_name}, {shop}",
+    "kind": "letter"
+  },
+  {
+    "category": "player_investment",
+    "title": "A Merchant's Gratitude",
+    "body": "Your coin in {shop} means more breathing room. I'm grateful for that.",
+    "id": "PLAYER-INV02",
+    "audience": "player",
+    "signature": "{merchant_name}, {shop}",
+    "kind": "letter"
+  },
+  {
+    "category": "player_investment",
+    "title": "Worthy of Trust",
+    "body": "It's a good feeling, knowing someone thinks {shop} is worth backing. Thank you.",
+    "id": "PLAYER-INV03",
+    "audience": "player",
+    "signature": "{merchant_name}, {shop}",
+    "kind": "letter"
+  },
+  {
+    "category": "player_investment",
+    "title": "A Shopkeeper's Thanks",
+    "body": "Thank you for the investment in {shop}. I'd put that more grandly if I knew how.",
+    "id": "PLAYER-INV04",
+    "audience": "player",
+    "signature": "{merchant_name}, {shop}",
+    "kind": "letter"
+  },
+  {
+    "category": "player_investment",
+    "title": "Respect and Appreciation",
+    "body": "There's a lot of worry behind a shop counter. Your help with {shop} means a little less of it.",
+    "id": "PLAYER-INV05",
+    "audience": "player",
+    "signature": "{merchant_name}, {shop}",
+    "kind": "letter"
+  },
+  {
+    "category": "player_thanks",
+    "title": "A Friend's Regard",
+    "body": "It's good to know you. I don't say that often enough.",
+    "id": "PLAYER-FRIEND01",
+    "audience": "player",
+    "signature": "{friend_name_or_initial}",
+    "kind": "letter"
+  },
+  {
+    "category": "player_thanks",
+    "title": "Glad to Know You",
+    "body": "I'm glad we're friends. There doesn't have to be more to this note than that.",
+    "id": "PLAYER-FRIEND02",
+    "audience": "player",
+    "signature": "{friend_name_or_initial}",
+    "kind": "letter"
+  },
+  {
+    "category": "player_thanks",
+    "title": "A Valued Friendship",
+    "body": "The world feels a little less sharp with a friend like you in it.",
+    "id": "PLAYER-FRIEND03",
+    "audience": "player",
+    "signature": "{friend_name_or_initial}",
+    "kind": "letter"
+  },
+  {
+    "category": "player_thanks",
+    "title": "Few Words of Thanks",
+    "body": "I hope you know I think well of you.",
+    "id": "PLAYER-FRIEND04",
+    "audience": "player",
+    "signature": "{friend_name_or_initial}",
+    "kind": "letter"
+  },
+  {
+    "category": "player_thanks",
+    "title": "Dear as a Friend",
+    "body": "Some people are easier to be yourself around. You're one of them.",
+    "id": "PLAYER-FRIEND05",
+    "audience": "player",
+    "signature": "{friend_name_or_initial}",
+    "kind": "letter"
+  },
+  {
+    "category": "player_thanks",
+    "title": "A Kindly Thought",
+    "body": "A small note to a good friend. That's you, in case there's any doubt.",
+    "id": "PLAYER-FRIEND06",
+    "audience": "player",
+    "signature": "{friend_name_or_initial}",
+    "kind": "letter"
+  },
+  {
+    "category": "player_thanks",
+    "title": "Friendship Enough",
+    "body": "I'm glad of your friendship. My handwriting seems a poor way to show it.",
+    "id": "PLAYER-FRIEND07",
+    "audience": "player",
+    "signature": "{friend_name_or_initial}",
+    "kind": "letter"
+  },
+  {
+    "category": "player_thanks",
+    "title": "A Good Person",
+    "body": "It's nice knowing someone I can think of fondly without a long list of buts.",
+    "id": "PLAYER-FRIEND08",
+    "audience": "player",
+    "signature": "{friend_name_or_initial}",
+    "kind": "letter"
+  },
+  {
+    "category": "player_thanks",
+    "title": "Appreciation in Ink",
+    "body": "I value you. I know that sounds plain. It's meant warmly.",
+    "id": "PLAYER-FRIEND09",
+    "audience": "player",
+    "signature": "{friend_name_or_initial}",
+    "kind": "letter"
+  },
+  {
+    "category": "player_thanks",
+    "title": "A Friend Well Valued",
+    "body": "I hope life is being decent to you. You deserve decent.",
+    "id": "PLAYER-FRIEND10",
+    "audience": "player",
+    "signature": "{friend_name_or_initial}",
+    "kind": "letter"
+  },
+  {
+    "category": "player_thanks",
+    "title": "Honest Affection",
+    "body": "This is only a scrap of paper, but there's real fondness in it.",
+    "id": "PLAYER-FRIEND11",
+    "audience": "player",
+    "signature": "{friend_name_or_initial}",
+    "kind": "letter"
+  },
+  {
+    "category": "player_thanks",
+    "title": "A Quiet Thank You",
+    "body": "You're good company, even as a thought.",
+    "id": "PLAYER-FRIEND12",
+    "audience": "player",
+    "signature": "{friend_name_or_initial}",
+    "kind": "letter"
+  },
+  {
+    "category": "player_thanks",
+    "title": "Warm Regard",
+    "body": "There aren't so many good friends that I can afford to take one for granted.",
+    "id": "PLAYER-FRIEND13",
+    "audience": "player",
+    "signature": "{friend_name_or_initial}",
+    "kind": "letter"
+  },
+  {
+    "category": "player_thanks",
+    "title": "No Grand Occasion",
+    "body": "You have a place in my heart. A friend's place, before you get any ideas.",
+    "id": "PLAYER-FRIEND14",
+    "audience": "player",
+    "signature": "{friend_name_or_initial}",
+    "kind": "letter"
+  },
+  {
+    "category": "player_thanks",
+    "title": "A Good Thing in Life",
+    "body": "I'm glad you're my freind. Don't judge the spelling.",
+    "id": "PLAYER-FRIEND15",
+    "audience": "player",
+    "signature": "{friend_name_or_initial}",
+    "kind": "letter"
+  },
+  {
+    "category": "player_hate",
+    "title": "Plain Dislike",
+    "body": "{player_name},\n\nI can't stand you. There. No need to dress it up.",
+    "id": "PLAYER-HATE01",
+    "audience": "player",
+    "signature": "{rival_name_or_initial}",
+    "kind": "letter"
+  },
+  {
+    "category": "player_hate",
+    "title": "No Warm Regard",
+    "body": "{player_name},\n\nYou think rather a lot of yourself. I think rather less.",
+    "id": "PLAYER-HATE02",
+    "audience": "player",
+    "signature": "{rival_name_or_initial}",
+    "kind": "letter"
+  },
+  {
+    "category": "player_hate",
+    "title": "A Bitter Opinion",
+    "body": "{player_name},\n\nI have nothing kind to say about you, so this will be short.",
+    "id": "PLAYER-HATE03",
+    "audience": "player",
+    "signature": "{rival_name_or_initial}",
+    "kind": "letter"
+  },
+  {
+    "category": "player_hate",
+    "title": "No Fondness",
+    "body": "{player_name},\n\nEven your name leaves a bad taste in my mouth.",
+    "id": "PLAYER-HATE04",
+    "audience": "player",
+    "signature": "{rival_name_or_initial}",
+    "kind": "letter"
+  },
+  {
+    "category": "player_hate",
+    "title": "An Honest Contempt",
+    "body": "{player_name},\n\nI dislike you more than is worth the price of this ink.",
+    "id": "PLAYER-HATE05",
+    "audience": "player",
+    "signature": "{rival_name_or_initial}",
+    "kind": "letter"
+  },
+  {
+    "category": "player_hate",
+    "title": "Thoroughly Unimpressed",
+    "body": "{player_name},\n\nThere's no fondness here. I wanted that clear.",
+    "id": "PLAYER-HATE06",
+    "audience": "player",
+    "signature": "{rival_name_or_initial}",
+    "kind": "letter"
+  },
+  {
+    "category": "player_hate",
+    "title": "A Cold Regard",
+    "body": "{player_name},\n\nI hope this is plain enough. I want nothing to do with you.",
+    "id": "PLAYER-HATE07",
+    "audience": "player",
+    "signature": "{rival_name_or_initial}",
+    "kind": "letter"
+  },
+  {
+    "category": "player_hate",
+    "title": "Little to Admire",
+    "body": "{player_name},\n\nSome people improve a room by leaving it. You come to mind.",
+    "id": "PLAYER-HATE08",
+    "audience": "player",
+    "signature": "{rival_name_or_initial}",
+    "kind": "letter"
+  },
+  {
+    "category": "player_hate",
+    "title": "A Sour Sentiment",
+    "body": "{player_name},\n\nMy opinion of you hasn't softened. In case you wondered.",
+    "id": "PLAYER-HATE09",
+    "audience": "player",
+    "signature": "{rival_name_or_initial}",
+    "kind": "letter"
+  },
+  {
+    "category": "player_hate",
+    "title": "Without Affection",
+    "body": "{player_name},\n\nYou wear on the nerves, even at a distance.",
+    "id": "PLAYER-HATE10",
+    "audience": "player",
+    "signature": "{rival_name_or_initial}",
+    "kind": "letter"
+  },
+  {
+    "category": "player_hate",
+    "title": "Without Pretense",
+    "body": "{player_name},\n\nI don't care for you. That's as polite as I can manage.",
+    "id": "PLAYER-HATE11",
+    "audience": "player",
+    "signature": "{rival_name_or_initial}",
+    "kind": "letter"
+  },
+  {
+    "category": "player_hate",
+    "title": "A Poor Impression",
+    "body": "{player_name},\n\nI tried to think of something good to say. Empty page.",
+    "id": "PLAYER-HATE12",
+    "audience": "player",
+    "signature": "{rival_name_or_initial}",
+    "kind": "letter"
+  },
+  {
+    "category": "player_hate",
+    "title": "Undiminished Disdain",
+    "body": "{player_name},\n\nIf you think we're friends, allow me to put that right.",
+    "id": "PLAYER-HATE13",
+    "audience": "player",
+    "signature": "{rival_name_or_initial}",
+    "kind": "letter"
+  },
+  {
+    "category": "player_hate",
+    "title": "No Kind Opinion",
+    "body": "{player_name},\n\nI have a low opinion of you and no wish to raise it.",
+    "id": "PLAYER-HATE14",
+    "audience": "player",
+    "signature": "{rival_name_or_initial}",
+    "kind": "letter"
+  },
+  {
+    "category": "player_hate",
+    "title": "An Unpleasant Thought",
+    "body": "{player_name},\n\nI dont like you. You aren't worth another sheet of paper.",
+    "id": "PLAYER-HATE15",
+    "audience": "player",
+    "signature": "{rival_name_or_initial}",
+    "kind": "letter"
+  },
+  {
+    "category": "welcome_breezehome",
+    "title": "A Welcome to Breezehome",
+    "body": "Welcome to Breezehome. Small rooms, but there's comfort in that. I hope Whiterun feels like home to you.",
+    "id": "PLAYER-BREEZE01",
+    "audience": "player",
+    "signature": "{local_resident_name_or_initial}",
+    "kind": "letter"
+  },
+  {
+    "category": "welcome_breezehome",
+    "title": "A Place in Whiterun",
+    "body": "Breezehome is a good name for a place in Whiterun. May the breeze stay outside when the shutters are shut. Welcome, neighbour.",
+    "id": "PLAYER-BREEZE02",
+    "audience": "player",
+    "signature": "{local_resident_name_or_initial}",
+    "kind": "letter"
+  },
+  {
+    "category": "welcome_honeyside",
+    "title": "Welcome Beside the Water",
+    "body": "Welcome to Honeyside. I hope your little corner of Riften gives you some peace.",
+    "id": "PLAYER-HONEY01",
+    "audience": "player",
+    "signature": "{local_resident_name_or_initial}",
+    "kind": "letter"
+  },
+  {
+    "category": "welcome_honeyside",
+    "title": "A Riften Neighbor",
+    "body": "A home by the water sounds a fine thing. Warm wishes for Honeyside, and welcome to Riften.",
+    "id": "PLAYER-HONEY02",
+    "audience": "player",
+    "signature": "{local_resident_name_or_initial}",
+    "kind": "letter"
+  },
+  {
+    "category": "welcome_vlindrel",
+    "title": "A Home Among Stone",
+    "body": "Welcome to Vlindrel Hall. Markarth has a hard face, but I hope your home feels warm inside.",
+    "id": "PLAYER-VLINDREL01",
+    "audience": "player",
+    "signature": "{local_resident_name_or_initial}",
+    "kind": "letter"
+  },
+  {
+    "category": "welcome_vlindrel",
+    "title": "Warmth in Markarth",
+    "body": "Those old stone walls at Vlindrel Hall have stood a long while. I hope there's a good, quiet life within them for you.",
+    "id": "PLAYER-VLINDREL02",
+    "audience": "player",
+    "signature": "{local_resident_name_or_initial}",
+    "kind": "letter"
+  },
+  {
+    "category": "welcome_hjerim",
+    "title": "A Gentle Welcome to Hjerim",
+    "body": "Welcome to Hjerim. Windhelm can be a cold place. I hope your hearth makes up for it.",
+    "id": "PLAYER-HJERIM01",
+    "audience": "player",
+    "signature": "{local_resident_name_or_initial}",
+    "kind": "letter"
+  },
+  {
+    "category": "welcome_hjerim",
+    "title": "A Hearth in Windhelm",
+    "body": "A warm welcome for your home in Hjerim. It feels a small thing to send against all that Windhelm cold.",
+    "id": "PLAYER-HJERIM02",
+    "audience": "player",
+    "signature": "{local_resident_name_or_initial}",
+    "kind": "letter"
+  },
+  {
+    "category": "welcome_proudspire",
+    "title": "Welcome to Proudspire",
+    "body": "Proudspire Manor is quite a name to put on a letter. I hope the place is as comfortable as it is grand. Welcome to Solitude.",
+    "id": "PLAYER-PROUD01",
+    "audience": "player",
+    "signature": "{local_resident_name_or_initial}",
+    "kind": "letter"
+  },
+  {
+    "category": "welcome_proudspire",
+    "title": "A Place in Solitude",
+    "body": "Welcome to Proudspire. I hope even a house that fine has a good chair close to the fire.",
+    "id": "PLAYER-PROUD02",
+    "audience": "player",
+    "signature": "{local_resident_name_or_initial}",
+    "kind": "letter"
+  },
+  {
+    "category": "welcome_severin",
+    "title": "A Raven Rock Welcome",
+    "body": "Welcome to Severin Manor. Raven Rock takes some getting used to. I hope the house helps you feel settled.",
+    "id": "PLAYER-SEVERIN01",
+    "audience": "player",
+    "signature": "{local_resident_name_or_initial}",
+    "kind": "letter"
+  },
+  {
+    "category": "welcome_severin",
+    "title": "Warmth on Solstheim",
+    "body": "Good wishes for your home at Severin Manor. There's warmth to be found in Raven Rock, ash and all.",
+    "id": "PLAYER-SEVERIN02",
+    "audience": "player",
+    "signature": "{local_resident_name_or_initial}",
+    "kind": "letter"
+  },
+  {
+    "category": "welcome_shadowfoot",
+    "title": "A Quiet Riften Welcome",
+    "body": "Welcome to Shadowfoot Sanctum. A quiet corner beneath Riften sounds rather nice, all things considered.",
+    "id": "PLAYER-SHADOW01",
+    "audience": "player",
+    "signature": "{local_resident_name_or_initial}",
+    "kind": "letter"
+  },
+  {
+    "category": "welcome_shadowfoot",
+    "title": "A Home Below the Streets",
+    "body": "Warm wishes for Shadowfoot Sanctum. A place under the streets deserves a cheerful hearth as much as any other.",
+    "id": "PLAYER-SHADOW02",
+    "audience": "player",
+    "signature": "{local_resident_name_or_initial}",
+    "kind": "letter"
+  }
+]
