@@ -1,11 +1,11 @@
 {
-  "version": "1.1.1",
+  "version": "1.1.2",
   "source_archive": "Notes-and-Letters-source.zip",
-  "source_sha256": "eec61d4ca587bc0db51278690212c5104b12776a903be079121d7f5b355ae239",
+  "source_sha256": "b25e91396281233620c41b46a85f43442ad8946afef5f0c5dccbd5ef72fda4d9",
   "precompiled_commonlib": "build/vendor/CommonLibSSE-NG/CommonLibSSE.lib",
   "precompiled_download": "CommonLibSSE.lib.xz",
   "precompiled_sha256": "3903944e64320d91cd3e683b6759764932aade24da0261f07b291b36d0405687",
-  "runtime_archive": "Notes-and-Letters-v1.1.1-dev.zip",
-  "runtime_sha256": "dc7613cc3097acd3a78211f2907d482bc000f1ee425cda81e97b1465a310a661",
+  "runtime_archive": "Notes-and-Letters-v1.1.2-dev.zip",
+  "runtime_sha256": "54f14a3fe891d397fdcaa2cdec882fad6a405fbb0e42782d9f65d2750257ebe6",
   "gameplay_tested": false
 }

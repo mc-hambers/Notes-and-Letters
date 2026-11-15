@@ -11,7 +11,7 @@ from build_content import main as content
 from verify_binary import main as binary
 
 ROOT=Path(__file__).resolve().parents[1]
-VERSION='1.1.1'
+VERSION='1.1.2'
 
 def validate_esp(path):
     raw=path.read_bytes();tag,size,flags=struct.unpack_from('<4sII',raw);assert tag==b'TES4' and flags&0x200
@@ -34,11 +34,11 @@ def validate_esp(path):
                 books.append((form,fields[b'FULL'][0]))
             pos=record_end
         assert pos==end
-    assert len(books)==896 and len({title for _,title in books})==224
+    assert len(books)==896 and {title.rstrip(b'\0').decode() for _,title in books}=={'Note','Letter','Personal Note','Shopping List'}
     quest=found[0x01000C00];package=found[0x01000C01];assert quest[0]==b'QUST' and package[0]==b'PACK'
     assert b'ALPC' not in quest[1] and b'ALST' not in quest[1] and b'VMAD' not in quest[1]
     assert b'PKCU' not in package[1] and package[1][b'PKDT'][0][4]==27
-    return dict(esl_flag=True,compact_book_records=896,unique_note_texts=224,model_variants=4,old_delivery_implementation_removed=True,retired_records_inert=True,structural_record_validation='passed')
+    return dict(esl_flag=True,compact_book_records=896,unique_note_texts=224,broad_inventory_titles=4,model_variants=4,old_delivery_implementation_removed=True,retired_records_inert=True,structural_record_validation='passed')
 
 def main():
     content()
@@ -66,13 +66,14 @@ def main():
                 fields=[];cursor=pos+24;stop=cursor+size
                 while cursor<stop:
                     key,length=struct.unpack_from('<4sH',raw,cursor);cursor+=6
-                    if key!=b'DESC':fields.append((key,raw[cursor:cursor+length]))
+                    if key not in (b'DESC',b'FULL'):fields.append((key,raw[cursor:cursor+length]))
                     cursor+=length
                 records[form]=(tag,flags,fields);pos=stop
         return records
     with zipfile.ZipFile(previous) as old:
-        assert stable_fields(old.read('NotesAndLetters.esp'))==stable_fields((package/'NotesAndLetters.esp').read_bytes()), 'Existing record identities or non-text fields changed'
-    result['stable_records_and_non_text_fields_preserved']=True
+        assert stable_fields(old.read('NotesAndLetters.esp'))==stable_fields((package/'NotesAndLetters.esp').read_bytes()), 'Existing record identities or gameplay/art fields changed'
+    result['stable_records_and_gameplay_art_fields_preserved']=True
+    result['inventory_titles_intentionally_changed']=True
     result['rewritten_letter_bodies']=204
     result['courier_bundle_verified_at_load']=True
     result['signature_identity_rebind_before_verification']=True

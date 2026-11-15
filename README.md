@@ -1,15 +1,13 @@
 # Notes and Letters
 
-Current development version **1.1.1**.
+Current development version **1.1.2**.
 
-[Download](https://github.com/mc-hambers/Notes-and-Letters/releases/tag/v1.1.1).
+[Download](https://github.com/mc-hambers/Notes-and-Letters/releases/tag/v1.1.2).
 
-- Fix signature tracking when Skyrim changes a note instance ID during inventory insertion. Apply pending ID changes before verification and identify an unambiguous newly inserted instance when necessary.
-- Apply pending ID changes before rendering a note.
-- Recover an untracked courier/player-held note when opened without adding another item. Recovery assigns a new saved signature; personal lists remain unsigned.
-- Preserve existing tracked text/signatures, save schema 2, runtime filenames and all BOOK record identities.
+- Replaced descriptive inventory names with Note, Letter, Personal Note and Shopping List, shared across the catalog. Players must open a letter to discover its contents.
+- All 224 bodies, signature rules, stable review IDs, 896 BOOK identities, models and saved-instance schema are preserved. Includes the 1.1.1 signature fix.
 
-Validation: native build, Windows loader, package checks and 67,311 behavior assertions passed. In-game signature display remains unverified. Not installed automatically.
+Validation: native build, Windows loader, package checks and 67,311 behavior assertions passed. In-game UI verification remains pending. Not installed automatically.
 
 ## Complete source
 

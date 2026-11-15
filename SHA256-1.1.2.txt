@@ -1,0 +1,2 @@
+54f14a3fe891d397fdcaa2cdec882fad6a405fbb0e42782d9f65d2750257ebe6  Notes-and-Letters-v1.1.2-dev.zip
+b25e91396281233620c41b46a85f43442ad8946afef5f0c5dccbd5ef72fda4d9  Notes-and-Letters-v1.1.2-source.zip

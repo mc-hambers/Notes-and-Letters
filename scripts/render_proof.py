@@ -45,9 +45,10 @@ def main():
     expected.update(dict(player_lover=10, player_jealousy=5, player_investment=5, player_thanks=15, player_hate=15))
     expected.update({k: 2 for k, _ in PLAYER if k.startswith('welcome_')})
     assert Counter(n['category'] for n in notes) == Counter(expected), 'Incorrect category counts'
-    for key in ('id', 'title', 'body'):
+    for key in ('id', 'body'):
         values = [n[key].strip().casefold() for n in notes]
         assert len(set(values)) == len(notes) and all(values), f'Duplicate or empty {key}'
+    assert all(n['title'] in {'Note','Letter','Personal Note','Shopping List'} for n in notes)
     assert len(notes) == 224
     for note in notes:
         assert note['signature'] == SIGNATURES[note['category']]
@@ -69,7 +70,7 @@ def main():
     lines = [
         '# Notes and Letters — Complete Proofreading Draft', '',
         '224 notes: 160 NPC notes and 64 player letters. Draft 1.', '',
-        'Each heading contains a stable review ID and the unique in-game note title. '
+        'Each heading contains a stable review ID and the broad in-game note title. '
         'Use the ID when requesting edits. Text beneath the heading is the complete note body.', '',
         'Braced text is a runtime placeholder, not literal in-game text. NPC signatures are '
         'chosen per note instance; repeats are acceptable. Personal notes and lists have no signature. Player letters use the appropriate '
@@ -92,7 +93,7 @@ def main():
                     lines.extend([f"— {n['signature']}", ''])
     target = ROOT / 'Notes-and-Letters-Proofreading.md'
     target.write_text('\n'.join(lines), encoding='utf-8')
-    print(f'Validated {len(notes)} unique titles, bodies, and IDs; 160 NPC + 64 player notes. Wrote {target.name}.')
+    print(f'Validated {len(notes)} notes with unique bodies and IDs; 160 NPC + 64 player notes. Wrote {target.name}.')
 
 if __name__ == '__main__':
     main()
