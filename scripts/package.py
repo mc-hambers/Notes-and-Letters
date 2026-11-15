@@ -11,7 +11,7 @@ from build_content import main as content
 from verify_binary import main as binary
 
 ROOT=Path(__file__).resolve().parents[1]
-VERSION='1.1.0'
+VERSION='1.1.1'
 
 def validate_esp(path):
     raw=path.read_bytes();tag,size,flags=struct.unpack_from('<4sII',raw);assert tag==b'TES4' and flags&0x200
@@ -75,6 +75,10 @@ def main():
     result['stable_records_and_non_text_fields_preserved']=True
     result['rewritten_letter_bodies']=204
     result['courier_bundle_verified_at_load']=True
+    result['signature_identity_rebind_before_verification']=True
+    result['untracked_opened_note_recovery']=True
+    result['signature_display_gameplay_verified']=False
+    assert native.index('flushUniqueChanges();',native.index('owner->AddObjectToContainer(book,extra,1,nullptr);')) < native.index('if (!find(owner,data.notes.at(id)))')
     result['discovery_at_save_load']=True
     result['live_courier_delivery_tested']=False
     assert 'GetAllForms' not in native and 'std::sort(remoteActors' not in native

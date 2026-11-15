@@ -123,15 +123,31 @@ public:
     std::string signature() {constexpr std::string_view letters="ABDEGHJKLMNRSTV";std::string s;s+=letters[data.random.next()%letters.size()];s+='.';if (data.random.chance(40)) {s+=' ';s+=letters[data.random.next()%letters.size()];s+='.';}return s;}
     std::optional<std::uint32_t> create(unsigned index,RE::TESObjectREFR* owner,Purpose purpose,RE::Actor* sender=nullptr,std::string sign={},std::string shop={}) {
         if (index>=224 || !books[index] || !owner || data.notes.size()>=1000000 || data.serials[index]==65535) {logger::error("Note creation stopped: missing owner/form or persistence limit");return {};}
-        Instance n;n.text=std::uint16_t(index);n.model=std::uint8_t(data.random.next()%modelCount);auto* book=bookFor(n);if (!book) return {};n.uid=++data.serials[index];n.extraBase=book->GetFormID();n.extraUID=n.uid;n.owner=owner->GetFormID();n.sender=sender ? sender->GetFormID() : 0;n.purpose=purpose;
+        Instance n;n.text=std::uint16_t(index);n.model=std::uint8_t(data.random.next()%modelCount);auto* book=bookFor(n);if (!book) return {};n.uid=++data.serials[index];n.extraBase=owner->GetFormID();n.extraUID=n.uid;n.owner=owner->GetFormID();n.sender=sender ? sender->GetFormID() : 0;n.purpose=purpose;
         n.body=replace(std::string(catalog[index].body),"{player_name}",RE::PlayerCharacter::GetSingleton()->GetName());n.body=replace(n.body,"{shop}",shop.empty() ? "your shop" : shop);
         n.signature=catalog[index].signature.empty() ? "" : sign.empty() ? signature() : sign;
         auto* extra=allocateRuntimeExtraData<RE::ExtraDataList>([](std::size_t bytes) {return RE::malloc(bytes);},[](void* storage) {::new(storage) RE::ExtraDataList();});
         if (!extra) {logger::error("Note item-data allocation failed");return {};}
         auto id=key(n);data.notes.emplace(id,n);
-        extra->Add(new RE::ExtraUniqueID(book->GetFormID(),n.uid));
+        extra->Add(new RE::ExtraUniqueID(n.extraBase,n.uid));
+        const auto identities=[&] {
+            std::vector<NoteIdentity> result;
+            auto inventory=owner->GetInventory([&](RE::TESBoundObject& object) {return &object==book;});
+            auto entry=inventory.find(book);
+            if (entry!=inventory.end() && entry->second.first>0 && entry->second.second && entry->second.second->extraLists)
+                for (auto* list:*entry->second.second->extraLists) if (list)
+                    if (auto* identity=list->GetByType<RE::ExtraUniqueID>()) result.emplace_back(identity->baseID,identity->uniqueID);
+            return result;
+        };
+        const auto before=identities();
         owner->AddObjectToContainer(book,extra,1,nullptr);
-        if (!find(owner,n)) {
+        // Skyrim may replace an instance ID during insertion. Apply that event
+        // before verification; never discard the body/signature under the old ID.
+        flushUniqueChanges();
+        if (!find(owner,data.notes.at(id))) if (auto identity=insertedIdentity(before,identities())) {
+            auto& saved=data.notes.at(id);saved.extraBase=identity->first;saved.extraUID=identity->second;
+        }
+        if (!find(owner,data.notes.at(id))) {
             data.notes.erase(id);
             logger::warn("Could not verify {} instance {} in {:08X}; leaving generation retryable",catalog[index].id,n.uid,n.owner);
             return {};
@@ -277,14 +293,19 @@ public:
         auto* ui=RE::UI::GetSingleton();if (event && ui && !ui->IsMenuOpen(RE::Console::MENU_NAME)) debugTarget=event->crosshairRef ? event->crosshairRef->CreateRefHandle() : RE::ObjectRefHandle{};
         return RE::BSEventNotifyControl::kContinue;
     }
-    void flush() {
-        std::vector<Movement> moved;std::vector<unsigned> invested;std::vector<UniqueChange> changed;
-        {std::scoped_lock lock(inboxMutex);moved.swap(movements);invested.swap(investments);changed.swap(uniqueChanges);}
+    void flushUniqueChanges() {
+        std::vector<UniqueChange> changed;
+        {std::scoped_lock lock(inboxMutex);changed.swap(uniqueChanges);}
         for (auto e:changed) {
             auto it=std::find_if(books.begin(),books.end(),[e](auto* b) {return b && b->GetFormID()==e.book;});if (it==books.end()) continue;
             const auto index=unsigned(it-books.begin())%textCount;
             for (auto& [id,n]:data.notes) if (bookFor(n)==*it && rebind(n,index,e.oldBase,e.oldUID,e.newBase,e.newUID)) break;
         }
+    }
+    void flush() {
+        flushUniqueChanges();
+        std::vector<Movement> moved;std::vector<unsigned> invested;
+        {std::scoped_lock lock(inboxMutex);moved.swap(movements);invested.swap(investments);}
         for (auto e:moved) {
             auto it=std::find_if(books.begin(),books.end(),[e](auto* b) {return b && b->GetFormID()==e.book;});if (it==books.end()) continue;
             auto* destination=e.newOwner ? RE::TESForm::LookupByID<RE::TESObjectREFR>(e.newOwner) : nullptr;
@@ -413,10 +434,26 @@ public:
         const auto elapsed=std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-start).count();
         if (elapsed>=5.0) logger::warn("Slow note work slice: {:.2f} ms; loaded visits={}, known actors={}, discovery cell={}/{}",elapsed,processed,remoteActors.size(),cellCursor,discoveryCells.size());
     }
-    std::string description(RE::TESObjectBOOK* b,RE::ExtraDataList* extras) const {
+    std::string description(RE::TESObjectBOOK* b,RE::ExtraDataList* extras) {
+        flushUniqueChanges();
         auto it=std::find(books.begin(),books.end(),b);if (it==books.end() || !extras) return {};
         auto* uid=extras->GetByType<RE::ExtraUniqueID>();if (!uid) return {};
-        auto n=std::find_if(data.notes.begin(),data.notes.end(),[&](const auto& row) {return row.second.text==unsigned(it-books.begin())%textCount && bookFor(row.second)==b && row.second.extraBase==uid->baseID && row.second.extraUID==uid->uniqueID;});if (n==data.notes.end()) return {};
+        auto n=std::find_if(data.notes.begin(),data.notes.end(),[&](const auto& row) {return row.second.text==unsigned(it-books.begin())%textCount && bookFor(row.second)==b && row.second.extraBase==uid->baseID && row.second.extraUID==uid->uniqueID;});if (n==data.notes.end()) {
+            // Repair only the exact opened instance; do not add another inventory item.
+            const auto index=unsigned(it-books.begin())%textCount;
+            if (!uid->uniqueID || data.serials[index]==65535 || data.notes.size()>=1000000) return {};
+            Instance repaired;repaired.text=std::uint16_t(index);repaired.model=std::uint8_t(unsigned(it-books.begin())/textCount);
+            repaired.uid=++data.serials[index];repaired.extraBase=uid->baseID;repaired.extraUID=uid->uniqueID;
+            repaired.body=replace(std::string(catalog[index].body),"{player_name}",RE::PlayerCharacter::GetSingleton()->GetName());
+            repaired.body=replace(repaired.body,"{shop}","your shop");
+            repaired.signature=catalog[index].signature.empty() ? "" : signature();
+            auto* player=RE::PlayerCharacter::GetSingleton();
+            if (find(player,repaired)) {repaired.owner=player->GetFormID();repaired.purpose=Purpose::Delivered;}
+            else if (find(courier,repaired)) {repaired.owner=courier->GetFormID();repaired.purpose=Purpose::Bundle;}
+            else return {}; // Unknown owner: leave the instance unchanged.
+            n=data.notes.emplace(key(repaired),std::move(repaired)).first;
+            logger::info("Recovered opened note {} instance {}; signature saved",catalog[index].id,n->second.uid);
+        }
         std::string s="<font face='$HandwrittenFont'><p align='left'>"+escaped(n->second.body);
         s+=signatureFooter(escaped(n->second.signature));return s+"</p></font>";
     }
@@ -480,7 +517,7 @@ struct BookHook {
                 logger::info("Opening note {:08X}; inventory art={}",book->GetFormID(),book->inventoryModel!=nullptr);
                 auto text=Manager::get().description(book,RE::BookMenu::GetExtraList());
                 if (!text.empty()) RE::BookMenu::GetDescription()=text.c_str();
-                else logger::debug("No instance text available; retaining base note text");
+                else logger::warn("No instance text available for {:08X}; retaining base note text",book->GetFormID());
             }
         }
         auto result=original(self,message);
@@ -511,7 +548,7 @@ void message(SKSE::MessagingInterface::Message* e) {
 }
 SKSEPluginLoad(const SKSE::LoadInterface* skse) {
     SKSE::Init(skse);if (auto path=SKSE::log::log_directory()) {auto sink=std::make_shared<spdlog::sinks::basic_file_sink_mt>((*path/"NotesAndLetters.log").string(),true);spdlog::set_default_logger(std::make_shared<spdlog::logger>("NotesAndLetters",std::move(sink)));spdlog::set_level(spdlog::level::info);spdlog::flush_on(spdlog::level::warn);spdlog::flush_every(3s);}
-    logger::info("Notes and Letters 1.1.0 development build; runtime {}",REL::Module::get().version().string());
+    logger::info("Notes and Letters 1.1.1 development build; runtime {}",REL::Module::get().version().string());
     const auto version=REL::Module::get().version();const std::set<unsigned> ae{317,318,323,342,353,629,640,659,1130,1170,1179};
     if (!(version.major()==1 && ((version.minor()==5 && version.patch()==97) || (version.minor()==6 && ae.contains(version.patch())) || (version.minor()==7 && (version.patch()==99 || version.patch()==104))))) {logger::error("Unsupported runtime");return false;}
     auto* api=SKSE::GetSerializationInterface();if (!api || !SKSE::GetTaskInterface()) return false;

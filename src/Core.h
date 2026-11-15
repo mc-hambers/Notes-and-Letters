@@ -69,6 +69,15 @@ inline bool rebind(Instance& n,unsigned text,unsigned oldBase,unsigned oldUID,un
     if (n.text!=text || n.extraBase!=oldBase || n.extraUID!=oldUID || newUID>65535) return false;
     n.extraBase=newBase;n.extraUID=std::uint16_t(newUID);return true;
 }
+using NoteIdentity=std::pair<std::uint32_t,std::uint16_t>;
+inline std::optional<NoteIdentity> insertedIdentity(const std::vector<NoteIdentity>& before,const std::vector<NoteIdentity>& after) {
+    std::optional<NoteIdentity> result;
+    for (const auto& id:after) if (id.second && std::find(before.begin(),before.end(),id)==before.end()) {
+        if (result && *result!=id) return {}; // Never guess between two new instances.
+        result=id;
+    }
+    return result;
+}
 inline bool readyHate(const Instance& n,double day,bool exists,bool senderAlive) {
     return n.purpose==Purpose::HateDraft && n.owner==n.sender && day>=n.due && exists && senderAlive;
 }

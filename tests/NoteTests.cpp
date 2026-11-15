@@ -79,6 +79,20 @@ int main() {
         migrated->notes.begin()->second.model=4;require(!decode(encode(*migrated)));
         Data helper;helper.helperDelivery=true;require(!decode(encode(helper))); // A route cannot outlive its tracked note/recipient.
     }
+    {
+        require(insertedIdentity({{10,1}},{{10,1},{20,9}})==NoteIdentity(20,9));
+        require(!insertedIdentity({{10,1}},{{10,1}}));
+        require(!insertedIdentity({},{{20,9},{20,10}}));
+        require(!insertedIdentity({},{{20,0}}));
+        Data saved;Instance n;n.text=0;n.uid=1;n.model=3;n.body="Existing letter";n.signature="A. B.";n.extraBase=10;n.extraUID=1;
+        saved.serials[0]=1;saved.notes.emplace(key(n),n);
+        auto& note=saved.notes.begin()->second;
+        require(rebind(note,0,10,1,20,9));
+        require(note.body=="Existing letter" && note.signature=="A. B.");
+        auto restored=decode(encode(saved));require(restored.has_value());
+        require(restored->notes.begin()->second.signature=="A. B." && restored->notes.begin()->second.extraUID==9);
+        require(!rebind(note,0,10,1,30,2));
+    }
     require(signatureFooter("A.")=="<br><br>A.");require(signatureFooter("").empty());
     Data d;d.random.value=1234;
     require(eligibleToRefresh(ActorState{},100));ActorState a;a.refresh=104;require(!eligibleToRefresh(a,103.99));require(eligibleToRefresh(a,104));

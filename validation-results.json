@@ -1,11 +1,11 @@
 {
-  "version": "1.1.0",
+  "version": "1.1.1",
   "plugin_name": "Notes and Letters",
   "dll_architecture": "x64",
   "windows_loader": "passed",
   "skse_exports": "passed",
   "gameplay_tested": false,
-  "core_behavior_checks": 67302,
+  "core_behavior_checks": 67311,
   "esl_flag": true,
   "compact_book_records": 896,
   "unique_note_texts": 224,
@@ -13,12 +13,15 @@
   "old_delivery_implementation_removed": true,
   "retired_records_inert": true,
   "structural_record_validation": "passed",
-  "dll_sha256": "54fd31eb20ad0c3cc13b5e67e9a99a97b7dff925b592f4d0da32f9625453dba6",
+  "dll_sha256": "0a112d185bc77520845fcca57f3ff6858fa49396d7de7cffe8b99bc8448a1bd8",
   "esp_sha256": "2d71f2efee342229b85ee0915ecc9daccae1b83d99e26ef42b744a8d6ba710d1",
   "save_schema": 2,
   "stable_records_and_non_text_fields_preserved": true,
   "rewritten_letter_bodies": 204,
   "courier_bundle_verified_at_load": true,
+  "signature_identity_rebind_before_verification": true,
+  "untracked_opened_note_recovery": true,
+  "signature_display_gameplay_verified": false,
   "discovery_at_save_load": true,
   "live_courier_delivery_tested": false,
   "global_form_scan_removed": true,
@@ -44,6 +47,5 @@
     "NLDeliverPlayerNote"
   ],
   "safe_extra_data_allocation_bytes": 32,
-  "development_build": true,
-  "event_driven_actor_tracking": true
+  "development_build": true
 }
